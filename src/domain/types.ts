@@ -4,6 +4,7 @@
  * - Strict type-prefixed identifiers (usr_, grp_, tsk_, mls_, evt_)
  * - Strict UTC timestamps
  * - Multi-flavor task classifications
+ * - Custom work schedules and day-rollover anchor
  */
 
 export type UserId = `usr_${string}`;
@@ -16,6 +17,23 @@ export type TaskType = 'checklist' | 'milestone' | 'percentage';
 export type TaskRecurrence = 'daily' | 'weekly' | 'monthly' | 'custom';
 export type EventStatus = 'done' | 'in_progress' | 'ignored';
 export type TaskProgressStatus = 'pending' | 'in_progress' | 'done' | 'ignored';
+
+export type DayOfWeek = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+export type WorkweekVariant = 'mon_fri' | 'tue_sat' | 'sun_thu';
+
+export type ScheduleCadence =
+  | { type: 'daily' }
+  | { type: 'workweek'; variant: WorkweekVariant }
+  | { type: 'day_mask'; days: DayOfWeek[] }
+  | { type: 'custom_cycle'; cycleDays: number; anchorDate: string }
+  | { type: 'cycle_pattern'; daysOn: number; daysOff: number; anchorDate: string }
+  | { type: 'weekly'; dayOfWeek: DayOfWeek }
+  | { type: 'monthly'; dayOfMonth: number };
+
+export interface WorkSchedule {
+  cadence: ScheduleCadence;
+  timezone?: string; // IANA timezone e.g. 'Asia/Kolkata', default 'UTC'
+}
 
 export interface AuditFields {
   createdAt: string; // ISO-8601 UTC
@@ -30,6 +48,7 @@ export interface TaskGroup extends AuditFields {
   name: string;
   color?: string; // Hex color code e.g. '#4F46E5'
   sortOrder?: number;
+  schedule?: WorkSchedule; // Group-level operating schedule
   deletedAt?: string | null;
 }
 
@@ -41,8 +60,9 @@ export interface Task extends AuditFields {
   taskType: TaskType;
   recurrence: TaskRecurrence;
   cycleDays?: number | null; // Used when recurrence is 'custom' (e.g. 5, 10, 15)
+  schedule?: WorkSchedule; // Task-level override schedule (inherits from group if undefined)
   targetValue?: number | null; // e.g. 100.00 for percentage
-  unit?: string | null; // e.g. 'L', 'pages', 'minutes'
+  unit?: string | null; // e.g. 'L', 'pages', 'minutes', 'reps'
   sortOrder?: number;
   deletedAt?: string | null;
   archivedAt?: string | null;
@@ -123,4 +143,39 @@ export interface CycleConsistencySummary {
     date: string;
     summary: ConsistencyScoreSummary;
   }>;
+}
+
+/**
+ * An item on the active "Today's Checklist".
+ */
+export interface ActiveChecklistItem {
+  task: Task;
+  group?: TaskGroup | null;
+  milestones: TaskMilestone[];
+  evaluation: TaskEvaluationResult;
+}
+
+/**
+ * Full output of the Active Checklist Engine for a given operational day.
+ */
+export interface ActiveChecklistResult {
+  operationalDate: string; // YYYY-MM-DD
+  items: ActiveChecklistItem[];
+  overallConsistency: ConsistencyScoreSummary;
+  groupBreakdowns: GroupConsistencySummary[];
+  summary: {
+    totalDue: number;
+    doneCount: number;
+    inProgressCount: number;
+    pendingCount: number;
+    ignoredCount: number;
+  };
+}
+
+/**
+ * Options for evaluating day rollover and timezone.
+ */
+export interface DayRolloverOptions {
+  dayCutoffHour?: number; // 0 to 12 (default 3, meaning day rolls over at 03:00 AM)
+  timezone?: string; // IANA timezone e.g. 'Asia/Kolkata', default 'UTC'
 }

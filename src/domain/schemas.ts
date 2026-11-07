@@ -1,6 +1,6 @@
 /**
  * Laya (लय) — Zod Validation Schemas
- * Contract-first validation for all domain inputs and entities.
+ * Contract-first validation for all domain inputs, schedules, and entities.
  */
 
 import { z } from 'zod';
@@ -43,6 +43,61 @@ export const TaskProgressStatusSchema = z.enum([
   'ignored',
 ]);
 
+export const DayOfWeekSchema = z.enum(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']);
+export const WorkweekVariantSchema = z.enum(['mon_fri', 'tue_sat', 'sun_thu']);
+
+export const DateStringSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be formatted as YYYY-MM-DD');
+
+export const ScheduleCadenceSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('daily'),
+  }),
+  z.object({
+    type: z.literal('workweek'),
+    variant: WorkweekVariantSchema,
+  }),
+  z.object({
+    type: z.literal('day_mask'),
+    days: z.array(DayOfWeekSchema).min(1, 'At least one day must be selected in day_mask'),
+  }),
+  z.object({
+    type: z.literal('custom_cycle'),
+    cycleDays: z.number().int().positive('cycleDays must be >= 1'),
+    anchorDate: DateStringSchema,
+  }),
+  z.object({
+    type: z.literal('cycle_pattern'),
+    daysOn: z.number().int().positive('daysOn must be >= 1'),
+    daysOff: z.number().int().positive('daysOff must be >= 1'),
+    anchorDate: DateStringSchema,
+  }),
+  z.object({
+    type: z.literal('weekly'),
+    dayOfWeek: DayOfWeekSchema,
+  }),
+  z.object({
+    type: z.literal('monthly'),
+    dayOfMonth: z.number().int().min(1, 'dayOfMonth must be >= 1').max(31, 'dayOfMonth must be <= 31'),
+  }),
+]);
+
+export const WorkScheduleSchema = z.object({
+  cadence: ScheduleCadenceSchema,
+  timezone: z.string().optional(),
+});
+
+export const DayRolloverOptionsSchema = z.object({
+  dayCutoffHour: z
+    .number()
+    .int()
+    .min(0, 'dayCutoffHour cannot be negative')
+    .max(12, 'dayCutoffHour cannot exceed 12 (noon)')
+    .optional(),
+  timezone: z.string().optional(),
+});
+
 export const UtcTimestampSchema = z
   .string()
   .datetime({ offset: true, message: 'Timestamp must be a valid ISO-8601 UTC string' });
@@ -54,6 +109,7 @@ export const CreateTaskGroupInputSchema = z.object({
     .regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a 6-digit hex code e.g. #4F46E5')
     .optional(),
   sortOrder: z.number().int().optional(),
+  schedule: WorkScheduleSchema.optional(),
 });
 
 export const CreateTaskInputSchema = z
@@ -63,6 +119,7 @@ export const CreateTaskInputSchema = z
     recurrence: TaskRecurrenceSchema,
     groupId: GroupIdSchema.optional().nullable(),
     cycleDays: z.number().int().positive('cycleDays must be >= 1').optional().nullable(),
+    schedule: WorkScheduleSchema.optional(),
     targetValue: z.number().positive('targetValue must be > 0').optional().nullable(),
     unit: z.string().trim().max(24).optional().nullable(),
     sortOrder: z.number().int().optional(),
@@ -71,7 +128,7 @@ export const CreateTaskInputSchema = z
       .optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.recurrence === 'custom' && (!data.cycleDays || data.cycleDays < 1)) {
+    if (data.recurrence === 'custom' && !data.schedule && (!data.cycleDays || data.cycleDays < 1)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['cycleDays'],
@@ -118,3 +175,5 @@ export const RecordCompletionEventInputSchema = z
 export type CreateTaskInput = z.infer<typeof CreateTaskInputSchema>;
 export type CreateTaskGroupInput = z.infer<typeof CreateTaskGroupInputSchema>;
 export type RecordCompletionEventInput = z.infer<typeof RecordCompletionEventInputSchema>;
+export type WorkScheduleInput = z.infer<typeof WorkScheduleSchema>;
+export type ScheduleCadenceInput = z.infer<typeof ScheduleCadenceSchema>;
