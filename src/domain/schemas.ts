@@ -35,7 +35,7 @@ export const EventIdSchema = z
   );
 
 export const TaskTypeSchema = z.enum(['checklist', 'milestone', 'percentage']);
-export const TaskRecurrenceSchema = z.enum(['daily', 'weekly', 'monthly', 'custom', 'anytime']);
+export const TaskRecurrenceSchema = z.enum(['daily', 'weekly', 'days_of_week', 'monthly', 'quarterly', 'yearly', 'custom', 'anytime']);
 export const EventStatusSchema = z.enum(['done', 'in_progress', 'ignored']);
 export const TaskProgressStatusSchema = z.enum([
   'pending',
@@ -80,6 +80,15 @@ export const ScheduleCadenceSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('monthly'),
+    dayOfMonth: z.number().int().min(1, 'dayOfMonth must be >= 1').max(31, 'dayOfMonth must be <= 31'),
+  }),
+  z.object({
+    type: z.literal('quarterly'),
+    dayOfMonth: z.number().int().min(1, 'dayOfMonth must be >= 1').max(31, 'dayOfMonth must be <= 31'),
+  }),
+  z.object({
+    type: z.literal('yearly'),
+    month: z.number().int().min(1, 'month must be >= 1').max(12, 'month must be <= 12'),
     dayOfMonth: z.number().int().min(1, 'dayOfMonth must be >= 1').max(31, 'dayOfMonth must be <= 31'),
   }),
 ]);

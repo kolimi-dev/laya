@@ -1715,4 +1715,177 @@ input:focus, select:focus, textarea:focus {
   line-height: 1.5;
 }
 
+/* ==========================================================================
+   Task Modal Enhancements: Milestone Builder, Day Pills & Frequency Subgroups
+   ========================================================================== */
+.label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-tooltip-wrap {
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.info-tooltip-wrap:hover {
+  opacity: 1;
+}
+
+.info-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* Dynamic Milestone Row Inputs */
+.milestones-builder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.milestone-builder-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.milestone-row-num {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: monospace;
+  width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.milestone-builder-input {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.milestone-builder-input:focus {
+  border-color: var(--color-primary);
+}
+
+.btn-remove-milestone-row {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-subtle);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.btn-remove-milestone-row:hover {
+  color: var(--color-danger);
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.btn-add-milestone-row {
+  align-self: flex-start;
+  background: var(--bg-input);
+  border: 1px dashed var(--border-active);
+  color: var(--color-progress);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-add-milestone-row:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--color-progress);
+  color: #FFFFFF;
+}
+
+/* Frequency Subgroups & Day Pills */
+.frequency-subgroup {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.frequency-subgroup label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.days-picker-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 4px 0;
+}
+
+.day-pill {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-pill:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+  border-color: var(--border-active);
+}
+
+.day-pill.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-glow);
+}
+
+.input-with-prefix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.input-with-prefix input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+
 

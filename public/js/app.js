@@ -105,6 +105,13 @@
     percentageGroup: document.getElementById('percentage-input-group'),
     recurrenceSelect: document.getElementById('task-recurrence-select'),
     cycleDaysGroup: document.getElementById('cycle-days-group'),
+    milestonesBuilderList: document.getElementById('milestones-builder-list'),
+    btnAddMilestoneRow: document.getElementById('btn-add-milestone-row'),
+    daysPickerPills: document.getElementById('days-picker-pills'),
+    freqDaysOfWeekGroup: document.getElementById('freq-days-of-week-group'),
+    freqMonthlyGroup: document.getElementById('freq-monthly-group'),
+    freqQuarterlyGroup: document.getElementById('freq-quarterly-group'),
+    freqYearlyGroup: document.getElementById('freq-yearly-group'),
 
     modalGroup: document.getElementById('modal-group-backdrop'),
     modalCapabilities: document.getElementById('modal-capabilities-backdrop'),
@@ -806,29 +813,24 @@
   // Sample Data Seed with 21-Day Authentic Event History
   // ==========================================================================
   async function seedSampleHabits() {
-    // 1. Create default groups
-    const healthGroup = await api('/api/v1/groups', {
+    // 1. Create default groups: Personal and Work ONLY
+    const personalGroup = await api('/api/v1/groups', {
       method: 'POST',
-      body: JSON.stringify({ name: 'Health & Vitality', color: '#10B981', sortOrder: 1 }),
+      body: JSON.stringify({ name: 'Personal', color: '#8B5CF6', sortOrder: 1 }),
     }).catch(() => null);
 
     const workGroup = await api('/api/v1/groups', {
       method: 'POST',
-      body: JSON.stringify({ name: 'Deep Work & Office', color: '#06B6D4', sortOrder: 2 }),
-    }).catch(() => null);
-
-    const personalGroup = await api('/api/v1/groups', {
-      method: 'POST',
-      body: JSON.stringify({ name: 'Personal & Mind', color: '#8B5CF6', sortOrder: 3 }),
+      body: JSON.stringify({ name: 'Work', color: '#06B6D4', sortOrder: 2 }),
     }).catch(() => null);
 
     // 2. Create Multi-Flavor Tasks
-    // Task A: Drinking Water (Quantified 3 Liters)
+    // Task A: Drinking Water (Quantified 3 Liters) in Personal
     const waterTaskRes = await api('/api/v1/tasks', {
       method: 'POST',
       body: JSON.stringify({
         title: 'Drink Water Throughout Day',
-        groupId: healthGroup?.group?.id,
+        groupId: personalGroup?.group?.id,
         taskType: 'percentage',
         recurrence: 'daily',
         targetValue: 3,
@@ -836,12 +838,12 @@
       }),
     }).catch(() => null);
 
-    // Task B: Reading (Quantified 50 pages)
+    // Task B: Reading (Quantified 50 pages) in Personal
     const readTaskRes = await api('/api/v1/tasks', {
       method: 'POST',
       body: JSON.stringify({
         title: 'Deep Focus Reading',
-        groupId: workGroup?.group?.id,
+        groupId: personalGroup?.group?.id,
         taskType: 'percentage',
         recurrence: 'daily',
         targetValue: 50,
@@ -849,7 +851,7 @@
       }),
     }).catch(() => null);
 
-    // Task C: Pushups (Binary Checklist)
+    // Task C: Pushups (Binary Checklist) in Personal
     const pushupTaskRes = await api('/api/v1/tasks', {
       method: 'POST',
       body: JSON.stringify({
@@ -912,17 +914,56 @@
   }
 
   // ==========================================================================
-  // Progressive Disclosure: Apply Features to UI
+  // Milestone Checkpoints Dynamic Builder
+  // ==========================================================================
+  function addMilestoneRow(value = '') {
+    const list = document.getElementById('milestones-builder-list');
+    if (!list) return;
+
+    const row = document.createElement('div');
+    row.className = 'milestone-builder-row';
+    row.innerHTML = `
+      <span class="milestone-drag-handle">≡</span>
+      <input type="text" class="milestone-builder-input" placeholder="e.g. 1L, 2L, 3L or Step 1..." value="${escapeHtml(value)}">
+      <button type="button" class="btn-remove-milestone-row" title="Remove checkpoint">✕</button>
+    `;
+
+    row.querySelector('.btn-remove-milestone-row').addEventListener('click', () => {
+      row.remove();
+    });
+
+    list.appendChild(row);
+    const input = row.querySelector('.milestone-builder-input');
+    if (input && !value) input.focus();
+  }
+
+  function getMilestoneValues() {
+    const inputs = document.querySelectorAll('#milestones-builder-list .milestone-builder-input');
+    return Array.from(inputs).map((input) => input.value.trim()).filter(Boolean);
+  }
+
+  function initDefaultMilestoneRows() {
+    const list = document.getElementById('milestones-builder-list');
+    if (!list) return;
+    if (list.children.length === 0) {
+      addMilestoneRow('1L');
+      addMilestoneRow('2L');
+      addMilestoneRow('3L');
+    }
+  }
+
+  // ==========================================================================
+  // Progressive Disclosure: Apply Features to UI & Form Isolation
   // ==========================================================================
   function applyFeaturesToUi() {
     const currentVal = el.taskTypeSelect.value;
     let typeOptionsHtml = '<option value="checklist">Standard Checklist (Yes/No)</option>';
 
     if (state.features.milestones) {
-      typeOptionsHtml += '<option value="milestone">Discrete Milestones (1L, 2L, 3L)</option>';
+      typeOptionsHtml += '<option value="milestone">Discrete Milestones (Checkpoints)</option>';
     }
     if (state.features.quantified) {
-      typeOptionsHtml += '<option value="percentage">Quantified Target (e.g. 10 min, 40 g, 3 L)</option>';
+      typeOptionsHtml += '<option value="percentage">Quantified Target (Amount & Unit)</option>';
     }
 
     el.taskTypeSelect.innerHTML = typeOptionsHtml;
@@ -937,13 +978,18 @@
 
     const currentRec = el.recurrenceSelect.value;
     let recOptionsHtml = `
-      <option value="daily">Daily (Appears every day)</option>
-      <option value="anytime">Anytime Backlog (No fixed deadline)</option>
+      <option value="daily">Every Day</option>
+      <option value="anytime">Flexible / Anytime (No fixed date)</option>
     `;
     if (state.features.schedules) {
-      recOptionsHtml += `
-        <option value="workweek">Standard Workweek (Mon–Fri)</option>
-        <option value="custom">Custom Interval (e.g. every 5 days)</option>
+      recOptionsHtml = `
+        <option value="daily">Every Day</option>
+        <option value="days_of_week">Specific Days of Week</option>
+        <option value="monthly">Monthly (Specific day of month)</option>
+        <option value="quarterly">Quarterly (Every 3 months)</option>
+        <option value="yearly">Yearly (Annual date)</option>
+        <option value="custom">Custom Gap (Every N days)</option>
+        <option value="anytime">Flexible / Anytime (No fixed date)</option>
       `;
     }
     el.recurrenceSelect.innerHTML = recOptionsHtml;
@@ -953,13 +999,60 @@
     } else {
       el.recurrenceSelect.value = 'daily';
     }
-    el.cycleDaysGroup.hidden = el.recurrenceSelect.value !== 'custom';
+    syncRecurrenceFormFields();
   }
 
   function syncTaskTypeFormFields() {
     const selectedType = el.taskTypeSelect.value;
-    el.milestonesGroup.hidden = selectedType !== 'milestone';
-    el.percentageGroup.hidden = selectedType !== 'percentage';
+    const isMilestone = selectedType === 'milestone';
+    const isQuantified = selectedType === 'percentage';
+
+    // Strict field isolation: only show fields belonging to active task type
+    el.milestonesGroup.hidden = !isMilestone;
+    el.percentageGroup.hidden = !isQuantified;
+
+    const targetInput = document.getElementById('task-target-val');
+    const unitInput = document.getElementById('task-unit-input');
+
+    if (isQuantified) {
+      if (targetInput) targetInput.required = true;
+      if (unitInput) unitInput.required = true;
+    } else {
+      if (targetInput) {
+        targetInput.required = false;
+        targetInput.value = '';
+      }
+      if (unitInput) {
+        unitInput.required = false;
+        unitInput.value = '';
+      }
+    }
+
+    if (isMilestone) {
+      initDefaultMilestoneRows();
+      document.querySelectorAll('#milestones-builder-list .milestone-builder-input').forEach((input) => {
+        input.required = true;
+      });
+    } else {
+      document.querySelectorAll('#milestones-builder-list .milestone-builder-input').forEach((input) => {
+        input.required = false;
+      });
+    }
+  }
+
+  function syncRecurrenceFormFields() {
+    const rec = el.recurrenceSelect.value;
+    const daysOfWeekGroup = document.getElementById('freq-days-of-week-group');
+    const monthlyGroup = document.getElementById('freq-monthly-group');
+    const quarterlyGroup = document.getElementById('freq-quarterly-group');
+    const yearlyGroup = document.getElementById('freq-yearly-group');
+    const cycleDaysGroup = document.getElementById('cycle-days-group');
+
+    if (daysOfWeekGroup) daysOfWeekGroup.hidden = rec !== 'days_of_week';
+    if (monthlyGroup) monthlyGroup.hidden = rec !== 'monthly';
+    if (quarterlyGroup) quarterlyGroup.hidden = rec !== 'quarterly';
+    if (yearlyGroup) yearlyGroup.hidden = rec !== 'yearly';
+    if (cycleDaysGroup) cycleDaysGroup.hidden = rec !== 'custom';
   }
 
   function populateAddChartTaskSelect() {
@@ -1001,7 +1094,12 @@
 
   function populateGroupSelects() {
     const select = el.taskGroupSelect;
-    select.innerHTML = '<option value="">(Unassigned / General)</option>';
+    if (!select) return;
+    select.innerHTML = '';
+    if (state.groups.length === 0) {
+      select.innerHTML = '<option value="">(No groups created)</option>';
+      return;
+    }
     state.groups.forEach((g) => {
       select.innerHTML += `<option value="${g.id}">${escapeHtml(g.name)}</option>`;
     });
@@ -1164,9 +1262,31 @@
       updateViewTabBadges();
     });
 
-    // 8. Other Modals
+    // 8. Other Modals & Dynamic Form Controls
+    el.taskTypeSelect.addEventListener('change', syncTaskTypeFormFields);
+    el.recurrenceSelect.addEventListener('change', syncRecurrenceFormFields);
+
+    const btnAddMilestone = document.getElementById('btn-add-milestone-row');
+    if (btnAddMilestone) {
+      btnAddMilestone.addEventListener('click', () => addMilestoneRow());
+    }
+
+    const daysPicker = document.getElementById('days-picker-pills');
+    if (daysPicker) {
+      daysPicker.addEventListener('click', (e) => {
+        const pill = e.target.closest('.day-pill');
+        if (!pill) return;
+        pill.classList.toggle('active');
+        const activeCount = daysPicker.querySelectorAll('.day-pill.active').length;
+        if (activeCount === 0) {
+          pill.classList.add('active'); // Keep at least one active
+        }
+      });
+    }
+
     document.getElementById('btn-create-task-modal').addEventListener('click', () => {
       syncTaskTypeFormFields();
+      syncRecurrenceFormFields();
       el.modalTask.hidden = false;
     });
 
@@ -1252,7 +1372,7 @@
       const title = document.getElementById('task-title-input').value.trim();
       const groupId = document.getElementById('task-group-select').value || null;
       const taskType = document.getElementById('task-type-select').value;
-      const recurrence = document.getElementById('task-recurrence-select').value;
+      const recurrenceChoice = document.getElementById('task-recurrence-select').value;
 
       let targetValue = null;
       let unit = null;
@@ -1261,18 +1381,63 @@
       if (taskType === 'percentage') {
         const rawTarget = document.getElementById('task-target-val').value;
         const rawUnit = document.getElementById('task-unit-input').value.trim();
-        targetValue = rawTarget ? parseFloat(rawTarget) : 100;
-        unit = rawUnit || 'units';
+        targetValue = rawTarget ? parseFloat(rawTarget) : null;
+        unit = rawUnit || null;
       }
 
       if (taskType === 'milestone') {
-        const rawSteps = document.getElementById('task-milestones-input').value;
-        milestones = rawSteps.split(',').map((s) => s.trim()).filter(Boolean);
+        milestones = getMilestoneValues();
+        if (milestones.length === 0) {
+          alert('Please enter at least one milestone checkpoint.');
+          return;
+        }
       }
 
-      let cycleDays;
-      if (recurrence === 'custom') {
-        cycleDays = parseInt(document.getElementById('task-cycle-days').value, 10);
+      let recurrence = recurrenceChoice;
+      let schedule = undefined;
+      let cycleDays = undefined;
+
+      if (recurrenceChoice === 'days_of_week') {
+        const activeDays = Array.from(document.querySelectorAll('#days-picker-pills .day-pill.active'))
+          .map((p) => p.dataset.day);
+        if (activeDays.length === 0) {
+          alert('Please select at least one day of the week.');
+          return;
+        }
+        schedule = {
+          cadence: {
+            type: 'day_mask',
+            days: activeDays,
+          },
+        };
+      } else if (recurrenceChoice === 'monthly') {
+        const dayOfMonth = parseInt(document.getElementById('task-month-day').value, 10) || 1;
+        schedule = {
+          cadence: {
+            type: 'monthly',
+            dayOfMonth,
+          },
+        };
+      } else if (recurrenceChoice === 'quarterly') {
+        const dayOfMonth = parseInt(document.getElementById('task-quarter-day').value, 10) || 1;
+        schedule = {
+          cadence: {
+            type: 'quarterly',
+            dayOfMonth,
+          },
+        };
+      } else if (recurrenceChoice === 'yearly') {
+        const month = parseInt(document.getElementById('task-yearly-month').value, 10) || 1;
+        const dayOfMonth = parseInt(document.getElementById('task-yearly-day').value, 10) || 1;
+        schedule = {
+          cadence: {
+            type: 'yearly',
+            month,
+            dayOfMonth,
+          },
+        };
+      } else if (recurrenceChoice === 'custom') {
+        cycleDays = parseInt(document.getElementById('task-cycle-days').value, 10) || 5;
       }
 
       try {
@@ -1284,6 +1449,7 @@
             taskType,
             recurrence,
             cycleDays,
+            schedule,
             targetValue,
             unit,
             milestones,
@@ -1292,6 +1458,8 @@
 
         el.modalTask.hidden = true;
         e.target.reset();
+        syncTaskTypeFormFields();
+        syncRecurrenceFormFields();
         await refreshAllData();
       } catch (err) {
         alert(`Failed to create task: ${err.message}`);

@@ -156,6 +156,21 @@ export function isScheduleActiveOnDate(params: {
         return calendarDay === effectiveTargetDay;
       }
 
+      case 'quarterly': {
+        // Active on the specified day of each quarter month (Jan, Apr, Jul, Oct)
+        const isQuarterMonth = [1, 4, 7, 10].includes(calendarMonth);
+        const daysInMonth = new Date(Date.UTC(calendarYear, calendarMonth, 0)).getUTCDate();
+        const effectiveTargetDay = Math.min(cadence.dayOfMonth, daysInMonth);
+        return isQuarterMonth && calendarDay === effectiveTargetDay;
+      }
+
+      case 'yearly': {
+        // Active on the specified month and day of year
+        const daysInMonth = new Date(Date.UTC(calendarYear, cadence.month, 0)).getUTCDate();
+        const effectiveTargetDay = Math.min(cadence.dayOfMonth, daysInMonth);
+        return calendarMonth === cadence.month && calendarDay === effectiveTargetDay;
+      }
+
       default:
         return true;
     }
@@ -165,6 +180,7 @@ export function isScheduleActiveOnDate(params: {
   switch (recurrence) {
     case 'daily':
     case 'anytime':
+    case 'days_of_week':
       return true;
 
     case 'weekly':
@@ -174,6 +190,12 @@ export function isScheduleActiveOnDate(params: {
     case 'monthly':
       // Standard monthly defaults to the 1st of the month
       return calendarDay === 1;
+
+    case 'quarterly':
+      return [1, 4, 7, 10].includes(calendarMonth) && calendarDay === 1;
+
+    case 'yearly':
+      return calendarMonth === 1 && calendarDay === 1;
 
     case 'custom': {
       if (!cycleDays || cycleDays <= 1) return true;
