@@ -1,6 +1,6 @@
 /**
  * Laya (लय) — Zod Validation Schemas
- * Contract-first validation for all domain inputs, schedules, and entities.
+ * Contract-first validation for all domain inputs, schedules, reminders, and entities.
  */
 
 import { z } from 'zod';
@@ -98,6 +98,35 @@ export const DayRolloverOptionsSchema = z.object({
   timezone: z.string().optional(),
 });
 
+// Notifications & Quiet Hours Schemas
+export const NotificationStageSchema = z.enum(['stage_1_visual', 'stage_2_voice']);
+export const NotificationDeliveryStatusSchema = z.enum([
+  'delivered',
+  'downgraded_to_silent',
+  'canceled_already_completed',
+  'deferred',
+]);
+export const BlackoutActionSchema = z.enum(['downgrade_to_silent', 'defer']);
+
+export const QuietWindowSchema = z.object({
+  id: z.string().min(1, 'QuietWindow id cannot be empty'),
+  name: z.string().optional(),
+  startHour: z.number().int().min(0).max(23),
+  startMinute: z.number().int().min(0).max(59),
+  endHour: z.number().int().min(0).max(23),
+  endMinute: z.number().int().min(0).max(59),
+  daysOfWeek: z.array(DayOfWeekSchema).optional(),
+  groupId: GroupIdSchema.optional().nullable(),
+  action: BlackoutActionSchema,
+});
+
+export const TaskReminderConfigSchema = z.object({
+  time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'time must be in 24h format HH:MM'),
+  stage2DelayMinutes: z.number().int().min(1).max(240).default(15),
+  voicePromptTemplate: z.string().max(280).optional(),
+  enabled: z.boolean().default(true),
+});
+
 export const UtcTimestampSchema = z
   .string()
   .datetime({ offset: true, message: 'Timestamp must be a valid ISO-8601 UTC string' });
@@ -110,6 +139,7 @@ export const CreateTaskGroupInputSchema = z.object({
     .optional(),
   sortOrder: z.number().int().optional(),
   schedule: WorkScheduleSchema.optional(),
+  quietWindows: z.array(QuietWindowSchema).optional(),
 });
 
 export const CreateTaskInputSchema = z
@@ -120,6 +150,7 @@ export const CreateTaskInputSchema = z
     groupId: GroupIdSchema.optional().nullable(),
     cycleDays: z.number().int().positive('cycleDays must be >= 1').optional().nullable(),
     schedule: WorkScheduleSchema.optional(),
+    reminders: z.array(TaskReminderConfigSchema).optional(),
     targetValue: z.number().positive('targetValue must be > 0').optional().nullable(),
     unit: z.string().trim().max(24).optional().nullable(),
     sortOrder: z.number().int().optional(),
@@ -177,3 +208,5 @@ export type CreateTaskGroupInput = z.infer<typeof CreateTaskGroupInputSchema>;
 export type RecordCompletionEventInput = z.infer<typeof RecordCompletionEventInputSchema>;
 export type WorkScheduleInput = z.infer<typeof WorkScheduleSchema>;
 export type ScheduleCadenceInput = z.infer<typeof ScheduleCadenceSchema>;
+export type QuietWindowInput = z.infer<typeof QuietWindowSchema>;
+export type TaskReminderConfigInput = z.infer<typeof TaskReminderConfigSchema>;

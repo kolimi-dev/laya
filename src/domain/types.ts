@@ -5,6 +5,7 @@
  * - Strict UTC timestamps
  * - Multi-flavor task classifications
  * - Custom work schedules and day-rollover anchor
+ * - Staged notifications & quiet window blackouts
  */
 
 export type UserId = `usr_${string}`;
@@ -35,6 +36,45 @@ export interface WorkSchedule {
   timezone?: string; // IANA timezone e.g. 'Asia/Kolkata', default 'UTC'
 }
 
+export type NotificationStage = 'stage_1_visual' | 'stage_2_voice';
+export type NotificationDeliveryStatus =
+  | 'delivered'
+  | 'downgraded_to_silent'
+  | 'canceled_already_completed'
+  | 'deferred';
+export type BlackoutAction = 'downgrade_to_silent' | 'defer';
+
+export interface QuietWindow {
+  id: string;
+  name?: string; // e.g. "Sleep Blackout", "Weekend Office Blackout"
+  startHour: number; // 0-23
+  startMinute: number; // 0-59
+  endHour: number; // 0-23
+  endMinute: number; // 0-59
+  daysOfWeek?: DayOfWeek[]; // If omitted, applies every day
+  groupId?: GroupId | null; // If null/omitted, applies globally across all groups
+  action: BlackoutAction;
+}
+
+export interface TaskReminderConfig {
+  time: string; // "HH:MM" 24h format e.g. "09:00", "14:30"
+  stage2DelayMinutes: number; // Grace period before voice escalation e.g. 15 or 30
+  voicePromptTemplate?: string; // Custom voice prompt
+  enabled: boolean;
+}
+
+export interface EvaluatedNotification {
+  taskId: TaskId;
+  userId: UserId;
+  taskTitle: string;
+  stage: NotificationStage;
+  scheduledTime: string; // ISO-8601 UTC
+  deliveryStatus: NotificationDeliveryStatus;
+  visualMessage: string;
+  voiceMessage?: string | null;
+  reason?: string;
+}
+
 export interface AuditFields {
   createdAt: string; // ISO-8601 UTC
   updatedAt: string; // ISO-8601 UTC
@@ -49,6 +89,7 @@ export interface TaskGroup extends AuditFields {
   color?: string; // Hex color code e.g. '#4F46E5'
   sortOrder?: number;
   schedule?: WorkSchedule; // Group-level operating schedule
+  quietWindows?: QuietWindow[]; // Group-specific quiet window blackouts
   deletedAt?: string | null;
 }
 
@@ -61,6 +102,7 @@ export interface Task extends AuditFields {
   recurrence: TaskRecurrence;
   cycleDays?: number | null; // Used when recurrence is 'custom' (e.g. 5, 10, 15)
   schedule?: WorkSchedule; // Task-level override schedule (inherits from group if undefined)
+  reminders?: TaskReminderConfig[]; // Staged reminder schedule for this task
   targetValue?: number | null; // e.g. 100.00 for percentage
   unit?: string | null; // e.g. 'L', 'pages', 'minutes', 'reps'
   sortOrder?: number;
