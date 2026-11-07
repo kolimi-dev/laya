@@ -1,5 +1,8 @@
 import fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Env, getEnv } from './config/env.js';
 import { TrackerRepository } from './storage/tracker-repository.js';
 import { InMemoryTrackerRepository } from './storage/in-memory-tracker-repository.js';
@@ -13,6 +16,9 @@ import { taskRoutes } from './routes/tasks.js';
 import { consistencyRoutes } from './routes/consistency.js';
 import { dataRoutes } from './routes/data.js';
 import { feedbackRoutes } from './routes/feedback.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export interface AppOptions {
   repository?: TrackerRepository;
@@ -61,7 +67,15 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
           audience: env.JWT_AUDIENCE,
         }));
 
-  // 4. Public Routes
+  // 4. Static UI Client
+  const publicPath = path.resolve(__dirname, '../public');
+  await app.register(fastifyStatic, {
+    root: publicPath,
+    prefix: '/',
+    decorateReply: false,
+  });
+
+  // 5. Public Routes
   await app.register(healthRoutes);
 
   // 5. Authenticated Domain Routes
