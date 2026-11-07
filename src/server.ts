@@ -8,7 +8,7 @@ async function start(): Promise<void> {
   try {
     const address = await app.listen({ port: env.PORT, host: env.HOST });
     console.log(`\n======================================================`);
-    console.log(`✨ [Laya (लय)] Consistency & Rhythm Engine Started`);
+    console.log(`✨ [Laya (లయ)] Consistency & Rhythm Engine Started`);
     console.log(`   Address:  ${address}`);
     console.log(`   Health:   ${address}/api/v1/health`);
     console.log(`   Checklist: ${address}/api/v1/tasks/active`);

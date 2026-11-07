@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Staged Notification & Voice Escalation Engine
+ * Laya (లయ) — Staged Notification & Voice Escalation Engine
  * Implements the staged reminder escalation model:
  * 1. Stage 1 (Silent / Visual banner at scheduled time T)
  * 2. Stage 2 (Audible voice prompt escalation at T + gracePeriod if still pending)

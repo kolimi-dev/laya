@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Quiet Window Blackout Evaluator
+ * Laya (లయ) — Quiet Window Blackout Evaluator
  * Evaluates whether a given timestamp falls within an active quiet blackout window.
  * Supports cross-midnight windows (e.g. 10:00 PM to 07:30 AM), day-of-week filters, and group scopes.
  */

@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Storage Ports & Repository Contracts
+ * Laya (లయ) — Storage Ports & Repository Contracts
  * Hexagonal architecture port for task persistence and append-only event stream.
  */
 

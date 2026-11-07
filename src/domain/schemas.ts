@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Zod Validation Schemas
+ * Laya (లయ) — Zod Validation Schemas
  * Contract-first validation for all domain inputs, schedules, reminders, and entities.
  */
 

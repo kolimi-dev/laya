@@ -1,4 +1,4 @@
-# Laya (लय) — Personal Rhythm & Consistency Tracker
+# Laya (లయ) — Personal Rhythm & Consistency Tracker
 
 > **Pressure-free personal consistency tracking on your own terms.**
 

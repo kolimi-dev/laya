@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Task Progress Evaluator
+ * Laya (లయ) — Task Progress Evaluator
  * Evaluates individual task progress and earned points across the 3 multi-flavors:
  * 1. Standard Checklist (Binary: Pending, Done, Ignored)
  * 2. Discrete Milestones (Ratio of completed checkpoints to total checkpoints)

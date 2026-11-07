@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — In-Memory Tracker Repository Adapter
+ * Laya (లయ) — In-Memory Tracker Repository Adapter
  * Implements the TrackerRepository port for in-memory testing, local development, and offline caching.
  * Guaranteed idempotency and append-only event stream preservation.
  */

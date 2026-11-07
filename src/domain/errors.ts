@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Standard RFC 7807 Domain Errors
+ * Laya (లయ) — Standard RFC 7807 Domain Errors
  * Zero silent fallbacks (Ground Rule 6).
  */
 
