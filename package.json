@@ -1,0 +1,32 @@
+{
+  "name": "@kolimi/laya",
+  "version": "0.1.0",
+  "description": "Laya — Pressure-free personal consistency tracking and rhythm engine",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:coverage": "vitest run --coverage src"
+  },
+  "keywords": [
+    "kolimi",
+    "laya",
+    "consistency",
+    "rhythm",
+    "habits",
+    "zero-guilt"
+  ],
+  "author": "Kolimi Studio",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "typescript": "^5.7.3",
+    "vitest": "^5.1.0"
+  }
+}
