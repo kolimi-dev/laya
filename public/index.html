@@ -67,13 +67,28 @@
 
   <!-- Main Container -->
   <main class="app-main">
-    <!-- Operational Day Bar -->
+    <!-- Operational Day Bar & View Switcher -->
     <section class="operational-day-bar" id="operational-day-bar">
       <div class="day-info">
         <span class="calendar-icon">📅</span>
         <span class="date-headline" id="operational-date-text">Loading today's cadence...</span>
-        <span class="night-owl-pill" title="Keeps habits active past midnight until 3:00 AM">Night Owl Offset: 03:00 AM</span>
+        <span class="night-owl-pill" title="Keeps habits active past midnight until 3:00 AM">Night Owl: 03:00 AM</span>
       </div>
+
+      <!-- Human-Centric View Switcher -->
+      <div class="view-switch-nav" id="view-switch-nav">
+        <button class="view-switch-btn active" id="btn-view-tasks" data-view="tasks">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+          <span>Today's Tasks</span>
+          <span class="view-count-badge" id="badge-remaining-count">0</span>
+        </button>
+        <button class="view-switch-btn" id="btn-view-charts" data-view="charts">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+          <span>Task Charts</span>
+          <span class="view-count-badge subtle" id="badge-charts-count">0</span>
+        </button>
+      </div>
+
       <div class="day-actions">
         <button class="primary-btn" id="btn-create-task-modal">
           <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
@@ -85,93 +100,88 @@
       </div>
     </section>
 
-    <!-- Top Dashboard: Concentric Radial Dial & Guilt-Free Metrics -->
-    <section class="dashboard-hero" id="dashboard-hero-section">
-      <!-- Radial Dial Card -->
-      <div class="glass-card dial-card" id="dial-card-container">
-        <div class="card-header">
-          <h2 class="card-title">Daily Rhythm Dial</h2>
-          <span class="dial-mode-badge" id="dial-mode-badge">Concentric Ecosystem</span>
-        </div>
-
-        <div class="dial-container">
-          <div class="svg-dial-wrapper">
-            <svg id="rhythm-svg-dial" class="rhythm-svg" viewBox="0 0 280 280">
-              <!-- Rings rendered dynamically via JS -->
-            </svg>
-            <div class="dial-center-content">
-              <span class="dial-percentage" id="dial-center-percentage">0%</span>
-              <span class="dial-caption" id="dial-center-caption">Cadence Score</span>
-              <span class="dial-subcaption" id="dial-exempt-badge">Guilt-Free Ignored Exempt</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Legend for Rings -->
-        <div class="dial-legend" id="dial-legend">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <!-- Guilt-Free Mathematics Card -->
-      <div class="glass-card math-card">
-        <div class="card-header">
-          <h2 class="card-title">Guilt-Free Consistency Math</h2>
-          <span class="math-pill">No Broken Streaks</span>
-        </div>
-
-        <div class="formula-box">
-          <div class="formula-text">
-            $$\text{Consistency} = \frac{\sum \text{Completed Points}}{\text{Scheduled Points} - \text{Ignored Points}} \times 100$$
-          </div>
-          <p class="formula-note">
-            When you mark a task <strong>Ignored</strong> (due to rest, illness, or intentional pause), it is completely subtracted from the denominator. You are never penalized for resting.
-          </p>
-        </div>
-
-        <div class="metrics-grid">
-          <div class="metric-item">
-            <span class="metric-label">Scheduled Points</span>
-            <span class="metric-val" id="metric-scheduled">0.0</span>
-          </div>
-          <div class="metric-item highlight-done">
-            <span class="metric-label">Completed Points</span>
-            <span class="metric-val" id="metric-completed">0.0</span>
-          </div>
-          <div class="metric-item highlight-ignored">
-            <span class="metric-label">Rest Days (Exempt)</span>
-            <span class="metric-val" id="metric-ignored">0.0</span>
-          </div>
-          <div class="metric-item highlight-active">
-            <span class="metric-label">Active Denominator</span>
-            <span class="metric-val" id="metric-denominator">0.0</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Today's Active Checklist Section -->
-    <section class="checklist-section">
+    <!-- ======================================================================
+         VIEW 1: TODAY'S TASKS (Remaining on top, Completed/Rest below)
+         ====================================================================== -->
+    <section class="tasks-view-container" id="section-tasks-view">
       <div class="checklist-toolbar">
         <div class="filter-group-tabs" id="group-tabs-container">
           <button class="group-tab active" data-group-id="all">All Groups</button>
           <!-- Dynamic group tabs inserted here -->
         </div>
+      </div>
 
-        <div class="status-filters" id="status-filters">
-          <button class="status-chip active" data-status="all">All (<span id="count-all">0</span>)</button>
-          <button class="status-chip" data-status="pending">Pending (<span id="count-pending">0</span>)</button>
-          <button class="status-chip" data-status="done">Completed (<span id="count-done">0</span>)</button>
-          <button class="status-chip" data-status="ignored">Paused / Rest (<span id="count-ignored">0</span>)</button>
+      <!-- Primary Focus: Tasks Remaining Today -->
+      <div class="tasks-bucket-block" id="bucket-remaining">
+        <div class="bucket-header">
+          <div class="bucket-title-wrap">
+            <span class="bucket-indicator pending-dot"></span>
+            <h2 class="bucket-title">Remaining Today</h2>
+            <span class="bucket-badge" id="header-remaining-count">0 tasks</span>
+          </div>
+          <span class="bucket-subtext">Focus on what's left — take intentional rest anytime</span>
+        </div>
+
+        <div class="task-feed" id="feed-remaining">
+          <div class="empty-state" id="feed-loading">
+            <div class="spinner"></div>
+            <p>Syncing your cadence checklist...</p>
+          </div>
         </div>
       </div>
 
-      <!-- Task Card Feed -->
-      <div class="task-feed" id="task-feed">
-        <div class="empty-state" id="feed-loading">
-          <div class="spinner"></div>
-          <p>Syncing your cadence checklist...</p>
+      <!-- Secondary Focus: Completed & Rested Tasks Below -->
+      <div class="tasks-bucket-block bucket-completed-section" id="bucket-completed">
+        <div class="bucket-header">
+          <div class="bucket-title-wrap">
+            <span class="bucket-indicator done-dot"></span>
+            <h2 class="bucket-title">Completed & Rested Today</h2>
+            <span class="bucket-badge done-badge" id="header-completed-count">0 tasks</span>
+          </div>
+          <span class="bucket-subtext">Done or resting guilt-free</span>
         </div>
+
+        <div class="task-feed" id="feed-completed">
+          <!-- Dynamically populated completed & ignored tasks -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         VIEW 2: TASK CHARTS & TRENDS (No charts by default; user adds blocks)
+         ====================================================================== -->
+    <section class="charts-view-container" id="section-charts-view" hidden>
+      <!-- Time Range & Add Chart Toolbar -->
+      <div class="charts-toolbar">
+        <div class="time-filter-wrap">
+          <span class="time-filter-label">Range:</span>
+          <div class="time-filter-buttons" id="time-filter-buttons">
+            <button class="time-chip" data-range="week">This Week</button>
+            <button class="time-chip" data-range="month">This Month</button>
+            <button class="time-chip active" data-range="30d">Last 30 Days</button>
+            <button class="time-chip" data-range="90d">90 Days</button>
+            <button class="time-chip" data-range="1y">1 Year</button>
+            <button class="time-chip" data-range="custom">Custom...</button>
+          </div>
+          <div class="custom-date-inputs" id="custom-date-inputs" hidden>
+            <input type="date" id="chart-date-from" title="Start Date">
+            <span>to</span>
+            <input type="date" id="chart-date-to" title="End Date">
+            <button class="btn-apply-date" id="btn-apply-custom-date">Apply</button>
+          </div>
+        </div>
+
+        <div class="charts-actions">
+          <button class="primary-btn" id="btn-open-add-chart">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+            <span>+ Add Task Chart</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Task Charts Feed: 1 block per task, empty by default -->
+      <div class="task-charts-grid" id="task-charts-grid">
+        <!-- Rendered dynamically or empty state -->
       </div>
     </section>
   </main>
@@ -546,6 +556,40 @@
         <button type="button" class="btn-cancel" id="btn-cancel-otp">Cancel</button>
         <button type="button" class="danger-btn" id="btn-confirm-purge" disabled>Purge Local Data</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL 9: Add Task Chart Modal -->
+  <div class="modal-backdrop" id="modal-add-chart-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Pin Task Chart</h3>
+        <button class="modal-close-btn" id="btn-close-add-chart">&times;</button>
+      </div>
+      <form id="form-add-chart" class="modal-form">
+        <div class="form-group">
+          <label for="select-chart-task">Select Task *</label>
+          <select id="select-chart-task" required>
+            <!-- Dynamically populated from active tasks -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="select-chart-type">Preferred Chart Style</label>
+          <select id="select-chart-type" required>
+            <option value="auto">Smart Default (Best for this task type)</option>
+            <option value="volume_bar">Daily Volume / Quantity Bars (e.g. 3L, 50 pages)</option>
+            <option value="rhythm_matrix">Rhythm Matrix (Done / Rest / Missed blocks)</option>
+            <option value="trend_line">Cumulative Progress Trend Line</option>
+          </select>
+          <small class="form-help">Each task will render as an independent block. You can change its chart style or remove it anytime.</small>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" id="btn-cancel-add-chart">Cancel</button>
+          <button type="submit" class="btn-submit">Add Chart Block</button>
+        </div>
+      </form>
     </div>
   </div>
 

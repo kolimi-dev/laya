@@ -66,8 +66,8 @@ describe('Laya Tracker Fastify API Endpoints', () => {
     expect(response.statusCode).toBe(200);
     expect(response.headers['content-type']).toContain('text/html');
     expect(response.body).toContain('Laya');
-    expect(response.body).toContain('Daily Rhythm Dial');
-    expect(response.body).toContain('Guilt-Free Consistency Math');
+    expect(response.body).toContain('Remaining Today');
+    expect(response.body).toContain('Completed & Rested Today');
   });
 
   // 2. Authentication and RFC 7807 Error Handling
