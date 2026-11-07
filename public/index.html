@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laya (लय) — Pressure-Free Consistency & Rhythm</title>
+  <meta name="description" content="Laya is a guilt-free consistency tracker and cadence engine. No streak anxiety, multi-flavor tasks (milestones, percentage, checklist), and guilt-free rest days.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="theme-dark">
+  <!-- Top Global Navigation -->
+  <header class="navbar" id="main-navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo-wrap">
+          <svg class="brand-pulse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Laya <span class="brand-native">लय</span></span>
+          <span class="brand-subtitle">Natural Cadence & Rhythm</span>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <div class="network-badge online" id="network-badge" title="Network Connectivity">
+          <span class="dot"></span>
+          <span class="status-text">Online</span>
+        </div>
+
+        <button class="nav-btn" id="btn-onboarding" title="How Laya Works">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+          <span>Walkthrough</span>
+        </button>
+
+        <button class="nav-btn sponsor-btn" id="btn-sponsor" title="Honest Free Software Sponsorship">
+          <span class="heart-icon">❤️</span>
+          <span>Sponsor</span>
+        </button>
+
+        <button class="nav-btn" id="btn-feedback" title="Send Feedback">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h5a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+          <span>Feedback</span>
+        </button>
+
+        <button class="nav-btn" id="btn-data-portability" title="Data Portability & Backup">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          <span>Portability</span>
+        </button>
+
+        <div class="user-badge" id="user-badge" title="Active Kolimi ID Session">
+          <span class="user-avatar">👤</span>
+          <span class="user-id-text" id="active-user-display">Alice (usr_alice_123)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-main">
+    <!-- Operational Day Bar -->
+    <section class="operational-day-bar" id="operational-day-bar">
+      <div class="day-info">
+        <span class="calendar-icon">📅</span>
+        <span class="date-headline" id="operational-date-text">Loading today's cadence...</span>
+        <span class="night-owl-pill" title="Keeps habits active past midnight until 3:00 AM">Night Owl Offset: 03:00 AM</span>
+      </div>
+      <div class="day-actions">
+        <button class="primary-btn" id="btn-create-task-modal">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+          <span>New Task</span>
+        </button>
+        <button class="secondary-btn" id="btn-create-group-modal">
+          <span>+ New Group</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Top Dashboard: Concentric Radial Dial & Guilt-Free Metrics -->
+    <section class="dashboard-hero">
+      <!-- Radial Dial Card -->
+      <div class="glass-card dial-card">
+        <div class="card-header">
+          <h2 class="card-title">Daily Rhythm Dial</h2>
+          <span class="dial-mode-badge" id="dial-mode-badge">Concentric Ecosystem</span>
+        </div>
+
+        <div class="dial-container">
+          <div class="svg-dial-wrapper">
+            <svg id="rhythm-svg-dial" class="rhythm-svg" viewBox="0 0 280 280">
+              <!-- Rings rendered dynamically via JS -->
+            </svg>
+            <div class="dial-center-content">
+              <span class="dial-percentage" id="dial-center-percentage">0%</span>
+              <span class="dial-caption" id="dial-center-caption">Cadence Score</span>
+              <span class="dial-subcaption" id="dial-exempt-badge">Guilt-Free Ignored Exempt</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend for Rings -->
+        <div class="dial-legend" id="dial-legend">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Guilt-Free Mathematics Card -->
+      <div class="glass-card math-card">
+        <div class="card-header">
+          <h2 class="card-title">Guilt-Free Consistency Math</h2>
+          <span class="math-pill">No Broken Streaks</span>
+        </div>
+
+        <div class="formula-box">
+          <div class="formula-text">
+            $$\text{Consistency} = \frac{\sum \text{Completed Points}}{\text{Scheduled Points} - \text{Ignored Points}} \times 100$$
+          </div>
+          <p class="formula-note">
+            When you mark a task <strong>Ignored</strong> (due to rest, illness, or intentional pause), it is completely subtracted from the denominator. You are never penalized for resting.
+          </p>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <span class="metric-label">Scheduled Points</span>
+            <span class="metric-val" id="metric-scheduled">0.0</span>
+          </div>
+          <div class="metric-item highlight-done">
+            <span class="metric-label">Completed Points</span>
+            <span class="metric-val" id="metric-completed">0.0</span>
+          </div>
+          <div class="metric-item highlight-ignored">
+            <span class="metric-label">Rest Days (Exempt)</span>
+            <span class="metric-val" id="metric-ignored">0.0</span>
+          </div>
+          <div class="metric-item highlight-active">
+            <span class="metric-label">Active Denominator</span>
+            <span class="metric-val" id="metric-denominator">0.0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Today's Active Checklist Section -->
+    <section class="checklist-section">
+      <div class="checklist-toolbar">
+        <div class="filter-group-tabs" id="group-tabs-container">
+          <button class="group-tab active" data-group-id="all">All Groups</button>
+          <!-- Dynamic group tabs inserted here -->
+        </div>
+
+        <div class="status-filters" id="status-filters">
+          <button class="status-chip active" data-status="all">All (<span id="count-all">0</span>)</button>
+          <button class="status-chip" data-status="pending">Pending (<span id="count-pending">0</span>)</button>
+          <button class="status-chip" data-status="done">Completed (<span id="count-done">0</span>)</button>
+          <button class="status-chip" data-status="ignored">Paused / Rest (<span id="count-ignored">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- Task Card Feed -->
+      <div class="task-feed" id="task-feed">
+        <div class="empty-state" id="feed-loading">
+          <div class="spinner"></div>
+          <p>Syncing your cadence checklist...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL 1: Create Task Modal -->
+  <div class="modal-backdrop" id="modal-task-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Task</h3>
+        <button class="modal-close-btn" id="btn-close-task-modal">&times;</button>
+      </div>
+      <form id="form-create-task" class="modal-form">
+        <div class="form-group">
+          <label for="task-title-input">Task Title *</label>
+          <input type="text" id="task-title-input" required placeholder="e.g. Drink 3L Water, Read Book, Morning Pushups" maxlength="120">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="task-group-select">Group</label>
+            <select id="task-group-select">
+              <option value="">(Unassigned / General)</option>
+              <!-- Dynamic groups populated -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="task-type-select">Task Flavor *</label>
+            <select id="task-type-select" required>
+              <option value="checklist">Standard Checklist (Done / Pending / Ignored)</option>
+              <option value="milestone">Discrete Milestones (1L, 2L, 3L)</option>
+              <option value="percentage">Continuous Percentage (0% to 100%)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Conditional Flavor Sub-inputs -->
+        <div class="form-group flavor-conditional" id="milestones-input-group" hidden>
+          <label for="task-milestones-input">Milestone Steps (comma-separated) *</label>
+          <input type="text" id="task-milestones-input" placeholder="e.g. 1L, 2L, 3L or Set 1, Set 2, Set 3">
+          <small class="form-help">Each milestone will be an interactive checkable pill.</small>
+        </div>
+
+        <div class="form-row flavor-conditional" id="percentage-input-group" hidden>
+          <div class="form-group">
+            <label for="task-target-val">Target Amount (Optional)</label>
+            <input type="number" id="task-target-val" placeholder="e.g. 50">
+          </div>
+          <div class="form-group">
+            <label for="task-unit-input">Unit Label</label>
+            <input type="text" id="task-unit-input" placeholder="e.g. pages, mins, reps, L" maxlength="24">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="task-recurrence-select">Schedule Cadence *</label>
+            <select id="task-recurrence-select" required>
+              <option value="daily">Daily (Appears every day)</option>
+              <option value="workweek">Standard Workweek (Mon–Fri)</option>
+              <option value="anytime">Anytime Backlog (No fixed deadline)</option>
+              <option value="custom">Custom Interval (e.g. every 5 days)</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="cycle-days-group" hidden>
+            <label for="task-cycle-days">Interval Days</label>
+            <input type="number" id="task-cycle-days" min="1" max="365" value="5">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" id="btn-cancel-task">Cancel</button>
+          <button type="submit" class="btn-submit">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Create Group Modal -->
+  <div class="modal-backdrop" id="modal-group-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Task Group</h3>
+        <button class="modal-close-btn" id="btn-close-group-modal">&times;</button>
+      </div>
+      <form id="form-create-group" class="modal-form">
+        <div class="form-group">
+          <label for="group-name-input">Group Name *</label>
+          <input type="text" id="group-name-input" required placeholder="e.g. Health & Fitness, Office / Deep Work, Personal" maxlength="64">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="group-color-input">Accent Color</label>
+            <input type="color" id="group-color-input" value="#10B981">
+          </div>
+          <div class="form-group">
+            <label for="group-sort-input">Sort Order</label>
+            <input type="number" id="group-sort-input" value="1" min="0">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" id="btn-cancel-group">Cancel</button>
+          <button type="submit" class="btn-submit">Create Group</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Spotlight Interactive Onboarding Walkthrough -->
+  <div class="modal-backdrop" id="modal-onboarding-backdrop" hidden>
+    <div class="modal-card onboarding-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Welcome to Laya (लय)</h3>
+        <button class="modal-close-btn" id="btn-close-onboarding">&times;</button>
+      </div>
+
+      <div class="onboarding-carousel" id="onboarding-carousel">
+        <!-- Slide 1 -->
+        <div class="carousel-slide active" data-slide="1">
+          <div class="slide-icon">🌊</div>
+          <h4>1. Natural Cadence, Zero Broken Streaks</h4>
+          <p>
+            Traditional habit apps punish you with fiery streaks that shatter to zero if you catch the flu or take an intentional rest day.
+          </p>
+          <p>
+            Laya rejects streak anxiety. Consistency is measured as a <strong>continuous rhythm</strong> over time.
+          </p>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="carousel-slide" data-slide="2" hidden>
+          <div class="slide-icon">🎨</div>
+          <h4>2. 3 Multi-Flavor Task Types</h4>
+          <p>
+            Not everything is a binary yes/no checkbox. Laya gives you:
+          </p>
+          <ul class="slide-list">
+            <li><strong>Discrete Milestones:</strong> Track checkpoints like <em>Drink 3L Water</em> (1L, 2L, 3L).</li>
+            <li><strong>Continuous Percentage:</strong> Track partial progress on books, projects, or sprints.</li>
+            <li><strong>Standard Checklist:</strong> Clean binary checkoffs for workouts and habits.</li>
+          </ul>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-slide" data-slide="3" hidden>
+          <div class="slide-icon">🌙</div>
+          <h4>3. The Guilt-Free "Ignore" Action</h4>
+          <p>
+            When life happens, tap the <strong>Rest / Ignore</strong> button.
+          </p>
+          <p class="slide-highlight">
+            Ignored tasks are subtracted from the denominator:
+            $$\text{Consistency} = \frac{\text{Completed}}{\text{Scheduled} - \text{Ignored}} \times 100$$
+          </p>
+          <p>
+            Your score is preserved, your rest is honored, and you stay in rhythm guilt-free.
+          </p>
+        </div>
+      </div>
+
+      <div class="carousel-dots" id="carousel-dots">
+        <span class="dot active" data-index="1"></span>
+        <span class="dot" data-index="2"></span>
+        <span class="dot" data-index="3"></span>
+      </div>
+
+      <div class="modal-footer carousel-footer">
+        <button type="button" class="btn-cancel" id="btn-prev-slide" disabled>Previous</button>
+        <button type="button" class="btn-submit" id="btn-next-slide">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Support & Sponsorship Modal -->
+  <div class="modal-backdrop" id="modal-sponsor-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Honest Free Software Sponsorship</h3>
+        <button class="modal-close-btn" id="btn-close-sponsor">&times;</button>
+      </div>
+      <div class="sponsor-content">
+        <p>
+          Laya is built with zero advertisements, zero tracking pixels, and zero monetization of your personal habits.
+        </p>
+        <p>
+          If Laya brings calm and cadence to your daily routine, consider supporting ongoing development:
+        </p>
+        <div class="sponsor-links-grid">
+          <a href="https://ko-fi.com/kolimi" target="_blank" rel="noopener noreferrer" class="sponsor-card-link kofi">
+            <span class="sponsor-icon">☕</span>
+            <div class="sponsor-meta">
+              <strong>Support on Ko-fi</strong>
+              <small>Cards, Apple Pay, Google Pay, UPI • 0% platform cut</small>
+            </div>
+          </a>
+          <a href="https://github.com/sponsors/kolimi-dev" target="_blank" rel="noopener noreferrer" class="sponsor-card-link github">
+            <span class="sponsor-icon">🐙</span>
+            <div class="sponsor-meta">
+              <strong>GitHub Sponsors</strong>
+              <small>Monthly or one-time open-source contribution</small>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" id="btn-dismiss-sponsor">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Feedback Modal -->
+  <div class="modal-backdrop" id="modal-feedback-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Send Direct Feedback</h3>
+        <button class="modal-close-btn" id="btn-close-feedback">&times;</button>
+      </div>
+      <form id="form-feedback" class="modal-form">
+        <div class="form-group">
+          <label for="feedback-category">Category</label>
+          <select id="feedback-category">
+            <option value="general">General Sentiment / Thoughts</option>
+            <option value="feature_request">Feature Request / Idea</option>
+            <option value="bug">Bug Report</option>
+            <option value="support">Help & Support</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="feedback-message">Message *</label>
+          <textarea id="feedback-message" required rows="4" placeholder="What's working well? What could feel calmer or more intuitive?" maxlength="2000"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" id="btn-cancel-feedback">Cancel</button>
+          <button type="submit" class="btn-submit">Submit Feedback</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6: Data Portability & GDPR Modal -->
+  <div class="modal-backdrop" id="modal-data-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Data Portability & GDPR Controls</h3>
+        <button class="modal-close-btn" id="btn-close-data">&times;</button>
+      </div>
+      <div class="data-content">
+        <p>Your habit history belongs to you. Export full snapshots or restore backups anytime.</p>
+        
+        <div class="portability-actions">
+          <button class="secondary-btn" id="btn-export-json">
+            <span>📥 Export JSON Backup</span>
+          </button>
+          
+          <label class="file-upload-btn" for="import-json-file">
+            <span>📤 Restore JSON Backup</span>
+            <input type="file" id="import-json-file" accept=".json" hidden>
+          </label>
+        </div>
+
+        <hr class="divider">
+
+        <h4 class="danger-title">Privacy & Data Management</h4>
+        <p class="small-disclaimer">Clear your local browser cache or purge tracker history entirely.</p>
+        <button class="danger-btn" id="btn-clear-local-data">
+          <span>🧹 Clear Local Tracker Cache Only</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" id="btn-dismiss-data">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

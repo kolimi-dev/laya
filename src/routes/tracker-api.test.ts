@@ -42,7 +42,7 @@ describe('Laya Tracker Fastify API Endpoints', () => {
     return { app, repository };
   }
 
-  // 1. Healthcheck
+  // 1. Healthcheck & Static Client
   it('GET /api/v1/health returns 200 without authentication', async () => {
     const { app } = await createTestApp();
     const response = await app.inject({
@@ -54,6 +54,20 @@ describe('Laya Tracker Fastify API Endpoints', () => {
     const body = response.json();
     expect(body.status).toBe('ok');
     expect(body.service).toBe('laya');
+  });
+
+  it('GET / serves the rich HTML frontend UI client', async () => {
+    const { app } = await createTestApp();
+    const response = await app.inject({
+      method: 'GET',
+      url: '/',
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['content-type']).toContain('text/html');
+    expect(response.body).toContain('Laya');
+    expect(response.body).toContain('Daily Rhythm Dial');
+    expect(response.body).toContain('Guilt-Free Consistency Math');
   });
 
   // 2. Authentication and RFC 7807 Error Handling
