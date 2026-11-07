@@ -31,6 +31,34 @@ export class RemoteJwksVerifier implements JwtVerifier {
   }
 
   async verifyToken(token: string): Promise<AuthenticatedUser> {
+    // In local development, support instant local testing tokens
+    if (process.env.NODE_ENV === 'development') {
+      if (token === 'token_for_alice' || token === 'mock_alice') {
+        return {
+          userId: 'usr_alice_123',
+          phone: '+919876543210',
+          roles: ['user'],
+          sessionId: 'sid_dev_alice',
+        };
+      }
+      if (token === 'token_for_bob' || token === 'mock_bob') {
+        return {
+          userId: 'usr_bob_456',
+          phone: '+919876543211',
+          roles: ['user'],
+          sessionId: 'sid_dev_bob',
+        };
+      }
+      if (token.startsWith('usr_')) {
+        return {
+          userId: token as any,
+          phone: '+919999999999',
+          roles: ['user'],
+          sessionId: 'sid_dev',
+        };
+      }
+    }
+
     try {
       const { payload } = await jose.jwtVerify(token, this.jwks, {
         issuer: this.issuer,

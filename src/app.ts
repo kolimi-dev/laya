@@ -30,19 +30,7 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
   const env = getEnv(options.envOverrides);
 
   const app = fastify({
-    logger:
-      env.NODE_ENV === 'test'
-        ? false
-        : {
-            level: 'info',
-            transport:
-              env.NODE_ENV === 'development'
-                ? {
-                    target: 'pino-pretty',
-                    options: { colorize: true },
-                  }
-                : undefined,
-          },
+    logger: env.NODE_ENV !== 'test',
   });
 
   // 1. Cross-Origin Resource Sharing
