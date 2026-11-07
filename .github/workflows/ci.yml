@@ -1,0 +1,43 @@
+name: Laya CI & Quality Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Architecture, Security, Build & Test Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # Gate 1: Architecture Contracts (Hexagonal Boundaries & Cloud Agnosticism)
+      - name: "Gate 1: Architecture & Import Linting"
+        run: npm run lint:arch
+
+      # Gate 2: Security Vulnerability Scan
+      - name: "Gate 2: Package Security Audit"
+        run: npm run audit
+
+      # Gate 3: Typecheck & Build
+      - name: "Gate 3: Typecheck & Build"
+        run: npm run build
+
+      # Gate 4: Automated Unit & Integration Tests
+      - name: "Gate 4: Unit & Integration Tests"
+        run: npm test
+        env:
+          NODE_ENV: test

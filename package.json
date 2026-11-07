@@ -11,7 +11,9 @@
     "start": "node dist/server.js",
     "test": "vitest run src",
     "test:watch": "vitest src",
-    "test:coverage": "vitest run --coverage src"
+    "test:coverage": "vitest run --coverage src",
+    "lint:arch": "depcruise --config .dependency-cruiser.cjs src",
+    "audit": "npm audit --audit-level=critical"
   },
   "keywords": [
     "kolimi",
@@ -32,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
+    "dependency-cruiser": "^18.7.2",
     "tsx": "^4.23.15",
     "typescript": "^5.7.3",
     "vitest": "^5.1.0"
