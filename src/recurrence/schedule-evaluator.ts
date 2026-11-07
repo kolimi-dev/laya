@@ -164,6 +164,7 @@ export function isScheduleActiveOnDate(params: {
   // 2. Fallback to standard TaskRecurrence
   switch (recurrence) {
     case 'daily':
+    case 'anytime':
       return true;
 
     case 'weekly':

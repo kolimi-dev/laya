@@ -34,7 +34,7 @@ export const EventIdSchema = z
   );
 
 export const TaskTypeSchema = z.enum(['checklist', 'milestone', 'percentage']);
-export const TaskRecurrenceSchema = z.enum(['daily', 'weekly', 'monthly', 'custom']);
+export const TaskRecurrenceSchema = z.enum(['daily', 'weekly', 'monthly', 'custom', 'anytime']);
 export const EventStatusSchema = z.enum(['done', 'in_progress', 'ignored']);
 export const TaskProgressStatusSchema = z.enum([
   'pending',

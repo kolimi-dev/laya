@@ -14,7 +14,7 @@ export type MilestoneId = `mls_${string}`;
 export type EventId = `evt_${string}` | string; // Client idempotency key: evt_ or UUID
 
 export type TaskType = 'checklist' | 'milestone' | 'percentage';
-export type TaskRecurrence = 'daily' | 'weekly' | 'monthly' | 'custom';
+export type TaskRecurrence = 'daily' | 'weekly' | 'monthly' | 'custom' | 'anytime';
 export type EventStatus = 'done' | 'in_progress' | 'ignored';
 export type TaskProgressStatus = 'pending' | 'in_progress' | 'done' | 'ignored';
 
