@@ -104,3 +104,58 @@ export class InvalidTaskConfigError extends LayaDomainError {
     });
   }
 }
+
+export class GroupNotFoundError extends LayaDomainError {
+  constructor(groupId: string) {
+    super({
+      code: 'TRACKER_GROUP_NOT_FOUND',
+      title: 'Group Not Found',
+      status: 404,
+      detail: `The group with id '${groupId}' could not be found.`,
+    });
+  }
+}
+
+export class UnauthorizedError extends LayaDomainError {
+  constructor(detail: string = 'Missing or invalid authentication token.') {
+    super({
+      code: 'AUTH_UNAUTHORIZED',
+      title: 'Unauthorized',
+      status: 401,
+      detail,
+    });
+  }
+}
+
+export class InvalidTokenError extends LayaDomainError {
+  constructor(detail: string = 'The provided authentication token is invalid or malformed.') {
+    super({
+      code: 'AUTH_INVALID_TOKEN',
+      title: 'Invalid Authentication Token',
+      status: 401,
+      detail,
+    });
+  }
+}
+
+export class ExpiredTokenError extends LayaDomainError {
+  constructor(detail: string = 'The authentication token has expired.') {
+    super({
+      code: 'AUTH_EXPIRED_TOKEN',
+      title: 'Token Expired',
+      status: 401,
+      detail,
+    });
+  }
+}
+
+export class ForbiddenError extends LayaDomainError {
+  constructor(detail: string = 'You do not have permission to access this resource.') {
+    super({
+      code: 'AUTH_FORBIDDEN',
+      title: 'Forbidden',
+      status: 403,
+      detail,
+    });
+  }
+}

@@ -4,22 +4,23 @@
  */
 
 import { z } from 'zod';
+import { GroupId, MilestoneId, TaskId, UserId } from './types.js';
 
-export const UserIdSchema = z
+export const UserIdSchema: z.ZodType<UserId> = z
   .string()
-  .regex(/^usr_[0-9A-Za-z_-]+$/, "UserId must start with 'usr_' prefix");
+  .regex(/^usr_[0-9A-Za-z_-]+$/, "UserId must start with 'usr_' prefix") as any;
 
-export const GroupIdSchema = z
+export const GroupIdSchema: z.ZodType<GroupId> = z
   .string()
-  .regex(/^grp_[0-9A-Za-z_-]+$/, "GroupId must start with 'grp_' prefix");
+  .regex(/^grp_[0-9A-Za-z_-]+$/, "GroupId must start with 'grp_' prefix") as any;
 
-export const TaskIdSchema = z
+export const TaskIdSchema: z.ZodType<TaskId> = z
   .string()
-  .regex(/^tsk_[0-9A-Za-z_-]+$/, "TaskId must start with 'tsk_' prefix");
+  .regex(/^tsk_[0-9A-Za-z_-]+$/, "TaskId must start with 'tsk_' prefix") as any;
 
-export const MilestoneIdSchema = z
+export const MilestoneIdSchema: z.ZodType<MilestoneId> = z
   .string()
-  .regex(/^mls_[0-9A-Za-z_-]+$/, "MilestoneId must start with 'mls_' prefix");
+  .regex(/^mls_[0-9A-Za-z_-]+$/, "MilestoneId must start with 'mls_' prefix") as any;
 
 export const EventIdSchema = z
   .string()
@@ -203,8 +204,32 @@ export const RecordCompletionEventInputSchema = z
     }
   });
 
+export const UpdateTaskGroupInputSchema = z.object({
+  name: z.string().trim().min(1, 'Group name cannot be empty').max(64).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be a 6-digit hex code e.g. #4F46E5')
+    .optional(),
+  sortOrder: z.number().int().optional(),
+  schedule: WorkScheduleSchema.optional(),
+  quietWindows: z.array(QuietWindowSchema).optional(),
+});
+
+export const UpdateTaskInputSchema = z.object({
+  title: z.string().trim().min(1, 'Task title cannot be empty').max(120).optional(),
+  recurrence: TaskRecurrenceSchema.optional(),
+  cycleDays: z.number().int().positive('cycleDays must be >= 1').optional().nullable(),
+  schedule: WorkScheduleSchema.optional(),
+  reminders: z.array(TaskReminderConfigSchema).optional(),
+  targetValue: z.number().positive('targetValue must be > 0').optional().nullable(),
+  unit: z.string().trim().max(24).optional().nullable(),
+  sortOrder: z.number().int().optional(),
+});
+
 export type CreateTaskInput = z.infer<typeof CreateTaskInputSchema>;
+export type UpdateTaskInput = z.infer<typeof UpdateTaskInputSchema>;
 export type CreateTaskGroupInput = z.infer<typeof CreateTaskGroupInputSchema>;
+export type UpdateTaskGroupInput = z.infer<typeof UpdateTaskGroupInputSchema>;
 export type RecordCompletionEventInput = z.infer<typeof RecordCompletionEventInputSchema>;
 export type WorkScheduleInput = z.infer<typeof WorkScheduleSchema>;
 export type ScheduleCadenceInput = z.infer<typeof ScheduleCadenceSchema>;
