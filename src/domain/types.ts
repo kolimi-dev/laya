@@ -15,7 +15,7 @@ export type MilestoneId = `mls_${string}`;
 export type EventId = `evt_${string}` | string; // Client idempotency key: evt_ or UUID
 
 export type TaskType = 'checklist' | 'milestone' | 'percentage';
-export type TaskRecurrence = 'daily' | 'weekly' | 'monthly' | 'custom' | 'anytime';
+export type TaskRecurrence = 'daily' | 'weekly' | 'days_of_week' | 'monthly' | 'quarterly' | 'yearly' | 'custom' | 'anytime';
 export type EventStatus = 'done' | 'in_progress' | 'ignored';
 export type TaskProgressStatus = 'pending' | 'in_progress' | 'done' | 'ignored';
 
@@ -29,7 +29,9 @@ export type ScheduleCadence =
   | { type: 'custom_cycle'; cycleDays: number; anchorDate: string }
   | { type: 'cycle_pattern'; daysOn: number; daysOff: number; anchorDate: string }
   | { type: 'weekly'; dayOfWeek: DayOfWeek }
-  | { type: 'monthly'; dayOfMonth: number };
+  | { type: 'monthly'; dayOfMonth: number }
+  | { type: 'quarterly'; dayOfMonth: number }
+  | { type: 'yearly'; month: number; dayOfMonth: number };
 
 export interface WorkSchedule {
   cadence: ScheduleCadence;

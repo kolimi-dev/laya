@@ -167,7 +167,7 @@ describe('Schedule Evaluator & Night Owl Offset', () => {
     });
   });
 
-  describe('Monthly Cadence & Edge Clamping', () => {
+  describe('Monthly, Quarterly & Yearly Cadences', () => {
     it('evaluates monthly task on day 15', () => {
       const schedule: WorkSchedule = {
         cadence: { type: 'monthly', dayOfMonth: 15 },
@@ -194,6 +194,74 @@ describe('Schedule Evaluator & Night Owl Offset', () => {
         schedule,
         operationalInfo: { dateString: '2026-11-30', dayOfWeek: 'mon', calendarYear: 2026, calendarMonth: 11, calendarDay: 30 },
       })).toBe(true);
+    });
+
+    it('evaluates quarterly cadence (active in Jan, Apr, Jul, Oct on target day)', () => {
+      const schedule: WorkSchedule = {
+        cadence: { type: 'quarterly', dayOfMonth: 1 },
+      };
+
+      // January 1st -> active (quarter month)
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-01-01', dayOfWeek: 'thu', calendarYear: 2026, calendarMonth: 1, calendarDay: 1 },
+      })).toBe(true);
+
+      // April 1st -> active (quarter month)
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-04-01', dayOfWeek: 'wed', calendarYear: 2026, calendarMonth: 4, calendarDay: 1 },
+      })).toBe(true);
+
+      // November 1st -> inactive (not a quarter month)
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-11-01', dayOfWeek: 'sun', calendarYear: 2026, calendarMonth: 11, calendarDay: 1 },
+      })).toBe(false);
+    });
+
+    it('evaluates yearly cadence on target month and day', () => {
+      const schedule: WorkSchedule = {
+        cadence: { type: 'yearly', month: 7, dayOfMonth: 15 },
+      };
+
+      // July 15th -> active
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-07-15', dayOfWeek: 'wed', calendarYear: 2026, calendarMonth: 7, calendarDay: 15 },
+      })).toBe(true);
+
+      // July 16th -> inactive
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-07-16', dayOfWeek: 'thu', calendarYear: 2026, calendarMonth: 7, calendarDay: 16 },
+      })).toBe(false);
+
+      // August 15th -> inactive
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-08-15', dayOfWeek: 'sat', calendarYear: 2026, calendarMonth: 8, calendarDay: 15 },
+      })).toBe(false);
+    });
+
+    it('evaluates days_of_week recurrence with day_mask cadence', () => {
+      const schedule: WorkSchedule = {
+        cadence: { type: 'day_mask', days: ['mon', 'wed', 'fri'] },
+      };
+
+      // Wednesday Nov 4 -> active
+      expect(isScheduleActiveOnDate({
+        schedule,
+        recurrence: 'days_of_week',
+        operationalInfo: { dateString: '2026-11-04', dayOfWeek: 'wed', calendarYear: 2026, calendarMonth: 11, calendarDay: 4 },
+      })).toBe(true);
+
+      // Saturday Nov 7 -> inactive
+      expect(isScheduleActiveOnDate({
+        schedule,
+        recurrence: 'days_of_week',
+        operationalInfo: { dateString: '2026-11-07', dayOfWeek: 'sat', calendarYear: 2026, calendarMonth: 11, calendarDay: 7 },
+      })).toBe(false);
     });
   });
 });

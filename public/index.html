@@ -201,10 +201,9 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="task-group-select">Group</label>
-            <select id="task-group-select">
-              <option value="">(Unassigned / General)</option>
-              <!-- Dynamic groups populated -->
+            <label for="task-group-select">Group *</label>
+            <select id="task-group-select" required>
+              <!-- Populated dynamically with Personal & Work + custom groups -->
             </select>
           </div>
 
@@ -212,48 +211,131 @@
             <label for="task-type-select">Task Type *</label>
             <select id="task-type-select" required>
               <option value="checklist">Standard Checklist (Yes/No)</option>
-              <option value="milestone">Discrete Milestones (1L, 2L, 3L)</option>
-              <option value="percentage">Quantified Target (e.g. 10 min, 3 L, 50 pages)</option>
+              <option value="milestone">Discrete Milestones (Checkpoints)</option>
+              <option value="percentage">Quantified Target (Amount & Unit)</option>
             </select>
           </div>
         </div>
 
-        <!-- Dynamic Flavor Section 1: Milestones Checkpoints -->
+        <!-- Dynamic Flavor Section 1: Milestones Checkpoints (Strictly Isolated) -->
         <div class="form-group flavor-conditional" id="milestones-input-group" hidden>
-          <label for="task-milestones-input">Milestone Checkpoints (comma-separated) *</label>
-          <input type="text" id="task-milestones-input" placeholder="e.g. 1L, 2L, 3L or Set 1, Set 2, Set 3">
-          <small class="form-help">Each milestone will appear as an interactive checkable pill.</small>
+          <label>Milestone Checkpoints *</label>
+          <small class="form-help">Enter checkpoints in order. Each appears as an interactive checkable pill.</small>
+          <div class="milestones-builder-list" id="milestones-builder-list">
+            <!-- Dynamic rows inserted here -->
+          </div>
+          <button type="button" class="btn-add-milestone-row" id="btn-add-milestone-row">
+            <span>+ Add Checkpoint</span>
+          </button>
         </div>
 
-        <!-- Dynamic Flavor Section 2: Quantified Target (Number + Unit) -->
+        <!-- Dynamic Flavor Section 2: Quantified Target (Number + Unit - Strictly Isolated) -->
         <div class="form-row flavor-conditional" id="percentage-input-group" hidden>
           <div class="form-group">
             <label for="task-target-val">Target Amount *</label>
             <input type="number" id="task-target-val" placeholder="e.g. 10, 40, 1, 3, 50" min="0.01" step="any">
-            <small class="form-help">Amount to achieve (e.g. 10, 40, 1, 3)</small>
+            <small class="form-help">Numeric target to achieve</small>
           </div>
           <div class="form-group">
             <label for="task-unit-input">Unit Label *</label>
-            <input type="text" id="task-unit-input" placeholder="e.g. min, hr, g, kg, L, reps, pages" maxlength="24">
-            <small class="form-help">Unit of measurement (e.g. min, hr, L, kg)</small>
+            <input type="text" id="task-unit-input" placeholder="e.g. min, hr, g, kg, L, pages" maxlength="24">
+            <small class="form-help">Unit of measurement</small>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="task-recurrence-select">Schedule Cadence *</label>
-            <select id="task-recurrence-select" required>
-              <option value="daily">Daily (Appears every day)</option>
-              <option value="workweek">Standard Workweek (Mon–Fri)</option>
-              <option value="anytime">Anytime Backlog (No fixed deadline)</option>
-              <option value="custom">Custom Interval (e.g. every 5 days)</option>
-            </select>
+        <!-- Frequency Section: Plain Human Question with (i) Tooltip -->
+        <div class="form-group">
+          <div class="label-with-info">
+            <label for="task-recurrence-select">Repeat Frequency *</label>
+            <span class="info-tooltip-wrap" title="Determines when this task appears on your checklist. Tasks only show up on scheduled days.">
+              <span class="info-icon">ℹ️</span>
+            </span>
           </div>
+          <select id="task-recurrence-select" required>
+            <option value="daily">Every Day</option>
+            <option value="days_of_week">Specific Days of Week</option>
+            <option value="monthly">Monthly (Specific day of month)</option>
+            <option value="quarterly">Quarterly (Every 3 months)</option>
+            <option value="yearly">Yearly (Annual date)</option>
+            <option value="custom">Custom Gap (Every N days)</option>
+            <option value="anytime">Flexible / Anytime (No fixed date)</option>
+          </select>
+        </div>
 
-          <div class="form-group" id="cycle-days-group" hidden>
-            <label for="task-cycle-days">Interval Days</label>
-            <input type="number" id="task-cycle-days" min="1" max="365" value="5">
+        <!-- Frequency Sub-Options -->
+        <!-- A. Specific Days of Week Pills -->
+        <div class="frequency-subgroup" id="freq-days-of-week-group" hidden>
+          <label>Select Days of Week *</label>
+          <div class="days-picker-pills" id="days-picker-pills">
+            <button type="button" class="day-pill active" data-day="mon">Mon</button>
+            <button type="button" class="day-pill active" data-day="tue">Tue</button>
+            <button type="button" class="day-pill active" data-day="wed">Wed</button>
+            <button type="button" class="day-pill active" data-day="thu">Thu</button>
+            <button type="button" class="day-pill active" data-day="fri">Fri</button>
+            <button type="button" class="day-pill" data-day="sat">Sat</button>
+            <button type="button" class="day-pill" data-day="sun">Sun</button>
           </div>
+          <small class="form-help">Task will appear only on the highlighted days.</small>
+        </div>
+
+        <!-- B. Monthly Day of Month -->
+        <div class="frequency-subgroup" id="freq-monthly-group" hidden>
+          <label for="task-month-day">Day of the Month *</label>
+          <div class="input-with-prefix">
+            <span>Repeat on day</span>
+            <input type="number" id="task-month-day" min="1" max="31" value="1" style="width: 70px;">
+            <span>of each month</span>
+          </div>
+          <small class="form-help">e.g. 1st for rent/budget, 15th for mid-month review</small>
+        </div>
+
+        <!-- C. Quarterly (Every 3 months) -->
+        <div class="frequency-subgroup" id="freq-quarterly-group" hidden>
+          <label for="task-quarter-day">Quarterly Repeat Date *</label>
+          <div class="input-with-prefix">
+            <span>Repeat on day</span>
+            <input type="number" id="task-quarter-day" min="1" max="31" value="1" style="width: 70px;">
+            <span>of each quarter (Jan, Apr, Jul, Oct)</span>
+          </div>
+          <small class="form-help">e.g. 1st for quarterly tax reviews or health bloodwork</small>
+        </div>
+
+        <!-- D. Yearly -->
+        <div class="frequency-subgroup" id="freq-yearly-group" hidden>
+          <label>Annual Date *</label>
+          <div class="form-row">
+            <div class="form-group">
+              <select id="task-yearly-month">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <input type="number" id="task-yearly-day" min="1" max="31" value="1" placeholder="Day (1-31)">
+            </div>
+          </div>
+          <small class="form-help">e.g. Annual physical, car insurance renewal</small>
+        </div>
+
+        <!-- E. Custom Gap (Every N days) -->
+        <div class="frequency-subgroup" id="cycle-days-group" hidden>
+          <label for="task-cycle-days">Repeat Gap *</label>
+          <div class="input-with-prefix">
+            <span>Repeat every</span>
+            <input type="number" id="task-cycle-days" min="1" max="365" value="5" style="width: 75px;">
+            <span>days</span>
+          </div>
+          <small class="form-help">e.g. every 3 days, or every 10 days</small>
         </div>
 
         <div class="modal-footer">
