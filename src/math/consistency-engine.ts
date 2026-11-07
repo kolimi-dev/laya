@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Consistency Calculation Engine
+ * Laya (లయ) — Consistency Calculation Engine
  * Implements the core mathematical philosophy:
  * Pressure-free, guilt-free consistency scoring with the "Ignore" denominator exemption:
  *

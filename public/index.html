@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laya (लय) — Pressure-Free Consistency & Rhythm</title>
-  <meta name="description" content="Laya is a guilt-free consistency tracker and cadence engine. No streak anxiety, multi-flavor tasks (milestones, percentage, checklist), and guilt-free rest days.">
+  <title>Laya (లయ) — Pressure-Free Consistency & Rhythm</title>
+  <meta name="description" content="Laya is a guilt-free consistency tracker and cadence engine. No streak anxiety, multi-flavor tasks (milestones, quantified targets, checklist), and guilt-free rest days.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
           </svg>
         </div>
         <div class="brand-text">
-          <span class="brand-title">Laya <span class="brand-native">लय</span></span>
+          <span class="brand-title">Laya <span class="brand-native">లయ</span></span>
           <span class="brand-subtitle">Natural Cadence & Rhythm</span>
         </div>
       </div>
@@ -35,6 +35,11 @@
         <button class="nav-btn" id="btn-onboarding" title="How Laya Works">
           <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
           <span>Walkthrough</span>
+        </button>
+
+        <button class="nav-btn" id="btn-capabilities" title="Cadence Modules & Feature Toggles">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+          <span>Modules</span>
         </button>
 
         <button class="nav-btn sponsor-btn" id="btn-sponsor" title="Honest Free Software Sponsorship">
@@ -81,9 +86,9 @@
     </section>
 
     <!-- Top Dashboard: Concentric Radial Dial & Guilt-Free Metrics -->
-    <section class="dashboard-hero">
+    <section class="dashboard-hero" id="dashboard-hero-section">
       <!-- Radial Dial Card -->
-      <div class="glass-card dial-card">
+      <div class="glass-card dial-card" id="dial-card-container">
         <div class="card-header">
           <h2 class="card-title">Daily Rhythm Dial</h2>
           <span class="dial-mode-badge" id="dial-mode-badge">Concentric Ecosystem</span>
@@ -171,7 +176,7 @@
     </section>
   </main>
 
-  <!-- MODAL 1: Create Task Modal -->
+  <!-- MODAL 1: Create Task Modal (Dynamic based on selected Flavor) -->
   <div class="modal-backdrop" id="modal-task-backdrop" hidden>
     <div class="modal-card">
       <div class="modal-header">
@@ -181,7 +186,7 @@
       <form id="form-create-task" class="modal-form">
         <div class="form-group">
           <label for="task-title-input">Task Title *</label>
-          <input type="text" id="task-title-input" required placeholder="e.g. Drink 3L Water, Read Book, Morning Pushups" maxlength="120">
+          <input type="text" id="task-title-input" required placeholder="e.g. Morning Meditation, Drink Water, Deep Work" maxlength="120">
         </div>
 
         <div class="form-row">
@@ -194,30 +199,33 @@
           </div>
 
           <div class="form-group">
-            <label for="task-type-select">Task Flavor *</label>
+            <label for="task-type-select">Task Type *</label>
             <select id="task-type-select" required>
-              <option value="checklist">Standard Checklist (Done / Pending / Ignored)</option>
+              <option value="checklist">Standard Checklist (Yes/No)</option>
               <option value="milestone">Discrete Milestones (1L, 2L, 3L)</option>
-              <option value="percentage">Continuous Percentage (0% to 100%)</option>
+              <option value="percentage">Quantified Target (e.g. 10 min, 3 L, 50 pages)</option>
             </select>
           </div>
         </div>
 
-        <!-- Conditional Flavor Sub-inputs -->
+        <!-- Dynamic Flavor Section 1: Milestones Checkpoints -->
         <div class="form-group flavor-conditional" id="milestones-input-group" hidden>
-          <label for="task-milestones-input">Milestone Steps (comma-separated) *</label>
+          <label for="task-milestones-input">Milestone Checkpoints (comma-separated) *</label>
           <input type="text" id="task-milestones-input" placeholder="e.g. 1L, 2L, 3L or Set 1, Set 2, Set 3">
-          <small class="form-help">Each milestone will be an interactive checkable pill.</small>
+          <small class="form-help">Each milestone will appear as an interactive checkable pill.</small>
         </div>
 
+        <!-- Dynamic Flavor Section 2: Quantified Target (Number + Unit) -->
         <div class="form-row flavor-conditional" id="percentage-input-group" hidden>
           <div class="form-group">
-            <label for="task-target-val">Target Amount (Optional)</label>
-            <input type="number" id="task-target-val" placeholder="e.g. 50">
+            <label for="task-target-val">Target Amount *</label>
+            <input type="number" id="task-target-val" placeholder="e.g. 10, 40, 1, 3, 50" min="0.01" step="any">
+            <small class="form-help">Amount to achieve (e.g. 10, 40, 1, 3)</small>
           </div>
           <div class="form-group">
-            <label for="task-unit-input">Unit Label</label>
-            <input type="text" id="task-unit-input" placeholder="e.g. pages, mins, reps, L" maxlength="24">
+            <label for="task-unit-input">Unit Label *</label>
+            <input type="text" id="task-unit-input" placeholder="e.g. min, hr, g, kg, L, reps, pages" maxlength="24">
+            <small class="form-help">Unit of measurement (e.g. min, hr, L, kg)</small>
           </div>
         </div>
 
@@ -256,7 +264,7 @@
       <form id="form-create-group" class="modal-form">
         <div class="form-group">
           <label for="group-name-input">Group Name *</label>
-          <input type="text" id="group-name-input" required placeholder="e.g. Health & Fitness, Office / Deep Work, Personal" maxlength="64">
+          <input type="text" id="group-name-input" required placeholder="e.g. Health & Vitality, Deep Work, Personal" maxlength="64">
         </div>
 
         <div class="form-row">
@@ -278,11 +286,75 @@
     </div>
   </div>
 
-  <!-- MODAL 3: Spotlight Interactive Onboarding Walkthrough -->
+  <!-- MODAL 3: Cadence Modules & Feature Toggles -->
+  <div class="modal-backdrop" id="modal-capabilities-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Tracking Capabilities & Modules</h3>
+        <button class="modal-close-btn" id="btn-close-capabilities">&times;</button>
+      </div>
+      <div class="capabilities-content">
+        <p class="capabilities-intro">
+          Customize which capabilities appear in your daily tracking flow.
+        </p>
+
+        <div class="capabilities-list">
+          <label class="toggle-card">
+            <div class="toggle-meta">
+              <strong>💧 Discrete Milestones</strong>
+              <small>Progressive checkpoints (e.g. 1L, 2L, 3L or Set 1, Set 2).</small>
+            </div>
+            <input type="checkbox" id="toggle-feat-milestones" checked>
+          </label>
+
+          <label class="toggle-card">
+            <div class="toggle-meta">
+              <strong>⏱️ Quantified Targets (Amount & Unit)</strong>
+              <small>Paired amount and unit goals (e.g. 10 min, 40 g, 1 kg, 3 L, 50 pages).</small>
+            </div>
+            <input type="checkbox" id="toggle-feat-quantified" checked>
+          </label>
+
+          <label class="toggle-card">
+            <div class="toggle-meta">
+              <strong>⭕ Concentric Radial Rhythm Dial</strong>
+              <small>Multi-ring SVG visualizer displaying independent group progress.</small>
+            </div>
+            <input type="checkbox" id="toggle-feat-radial-dial" checked>
+          </label>
+
+          <label class="toggle-card">
+            <div class="toggle-meta">
+              <strong>💬 Micro-Context Notes</strong>
+              <small>Optional 280-char context notes on task completions and rest days.</small>
+            </div>
+            <input type="checkbox" id="toggle-feat-micronotes" checked>
+          </label>
+
+          <label class="toggle-card">
+            <div class="toggle-meta">
+              <strong>📆 Shift Workweeks & Cadence</strong>
+              <small>Support Mon-Fri, Tue-Sat, and custom interval schedules.</small>
+            </div>
+            <input type="checkbox" id="toggle-feat-schedules" checked>
+          </label>
+        </div>
+
+        <div class="forward-only-notice">
+          ℹ️ <strong>Forward-Only Guarantee:</strong> Disabling any capability only hides it for <em>new</em> tasks. Existing tasks and historical math will never be altered or broken.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-submit" id="btn-save-capabilities">Save Preferences</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Spotlight Interactive Onboarding Walkthrough -->
   <div class="modal-backdrop" id="modal-onboarding-backdrop" hidden>
     <div class="modal-card onboarding-card">
       <div class="modal-header">
-        <h3 class="modal-title">Welcome to Laya (लय)</h3>
+        <h3 class="modal-title">Welcome to Laya (లయ)</h3>
         <button class="modal-close-btn" id="btn-close-onboarding">&times;</button>
       </div>
 
@@ -295,20 +367,20 @@
             Traditional habit apps punish you with fiery streaks that shatter to zero if you catch the flu or take an intentional rest day.
           </p>
           <p>
-            Laya rejects streak anxiety. Consistency is measured as a <strong>continuous rhythm</strong> over time.
+            Laya (లయ) rejects streak anxiety. Consistency is measured as a <strong>continuous cadence</strong> over time.
           </p>
         </div>
 
         <!-- Slide 2 -->
         <div class="carousel-slide" data-slide="2" hidden>
           <div class="slide-icon">🎨</div>
-          <h4>2. 3 Multi-Flavor Task Types</h4>
+          <h4>2. Multi-Flavor Tasks</h4>
           <p>
             Not everything is a binary yes/no checkbox. Laya gives you:
           </p>
           <ul class="slide-list">
             <li><strong>Discrete Milestones:</strong> Track checkpoints like <em>Drink 3L Water</em> (1L, 2L, 3L).</li>
-            <li><strong>Continuous Percentage:</strong> Track partial progress on books, projects, or sprints.</li>
+            <li><strong>Quantified Targets:</strong> Track paired amounts and units like <em>10 min</em>, <em>40 g</em>, <em>50 pages</em>.</li>
             <li><strong>Standard Checklist:</strong> Clean binary checkoffs for workouts and habits.</li>
           </ul>
         </div>
@@ -325,7 +397,7 @@
             $$\text{Consistency} = \frac{\text{Completed}}{\text{Scheduled} - \text{Ignored}} \times 100$$
           </p>
           <p>
-            Your score is preserved, your rest is honored, and you stay in rhythm guilt-free.
+            Your score is preserved, your rest is honored, and you stay in cadence guilt-free.
           </p>
         </div>
       </div>
@@ -343,7 +415,7 @@
     </div>
   </div>
 
-  <!-- MODAL 4: Support & Sponsorship Modal -->
+  <!-- MODAL 5: Support & Sponsorship Modal -->
   <div class="modal-backdrop" id="modal-sponsor-backdrop" hidden>
     <div class="modal-card">
       <div class="modal-header">
@@ -380,7 +452,7 @@
     </div>
   </div>
 
-  <!-- MODAL 5: Feedback Modal -->
+  <!-- MODAL 6: Feedback Modal -->
   <div class="modal-backdrop" id="modal-feedback-backdrop" hidden>
     <div class="modal-card">
       <div class="modal-header">
@@ -411,7 +483,7 @@
     </div>
   </div>
 
-  <!-- MODAL 6: Data Portability & GDPR Modal -->
+  <!-- MODAL 7: Data Portability & GDPR Modal -->
   <div class="modal-backdrop" id="modal-data-backdrop" hidden>
     <div class="modal-card">
       <div class="modal-header">
@@ -435,13 +507,44 @@
         <hr class="divider">
 
         <h4 class="danger-title">Privacy & Data Management</h4>
-        <p class="small-disclaimer">Clear your local browser cache or purge tracker history entirely.</p>
-        <button class="danger-btn" id="btn-clear-local-data">
-          <span>🧹 Clear Local Tracker Cache Only</span>
+        <p class="small-disclaimer">Destructive actions require security verification to guard against accidental data loss.</p>
+        <button class="danger-btn" id="btn-trigger-otp-purge">
+          <span>🧹 Clear Local Tracker Cache...</span>
         </button>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-cancel" id="btn-dismiss-data">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 8: OTP Verification for Data Purge -->
+  <div class="modal-backdrop" id="modal-otp-backdrop" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--color-danger);">Security Verification</h3>
+        <button class="modal-close-btn" id="btn-close-otp">&times;</button>
+      </div>
+      <div class="otp-content">
+        <p>To guard against accidental data loss, please verify this action by entering the 6-digit confirmation code below:</p>
+        
+        <div class="otp-challenge-box">
+          <span class="otp-label">Security Verification Code</span>
+          <span class="otp-code-display" id="otp-expected-code">849201</span>
+        </div>
+
+        <div class="form-group" style="margin-top: 16px;">
+          <label for="otp-input-field">Enter 6-digit Code</label>
+          <input type="text" id="otp-input-field" maxlength="6" placeholder="______" autocomplete="off" style="font-size: 1.5rem; letter-spacing: 0.3em; text-align: center; font-family: monospace;">
+        </div>
+
+        <p class="small-disclaimer" id="otp-error-msg" style="color: var(--color-danger); margin-top: 8px;" hidden>
+          ⚠️ Verification code does not match. Please try again.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" id="btn-cancel-otp">Cancel</button>
+        <button type="button" class="danger-btn" id="btn-confirm-purge" disabled>Purge Local Data</button>
       </div>
     </div>
   </div>

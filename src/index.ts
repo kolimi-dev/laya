@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Core Domain, Mathematical Engine, Recurrence, Storage, Notifications & Fastify API
+ * Laya (లయ) — Core Domain, Mathematical Engine, Recurrence, Storage, Notifications & Fastify API
  * Public Exports
  */
 

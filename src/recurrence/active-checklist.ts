@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Active Checklist Engine ("Today's Checklist")
+ * Laya (లయ) — Active Checklist Engine ("Today's Checklist")
  * Dynamically computes actionable tasks due today, evaluating:
  * - Group schedules and task-level overrides
  * - Night Owl Day-Rollover Anchor (03:00 AM cutoff)

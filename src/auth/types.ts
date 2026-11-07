@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Auth Types
+ * Laya (లయ) — Auth Types
  * Universal Kolimi ID identity consumer interface.
  */
 

@@ -1,12 +1,41 @@
 /**
- * Laya (लय) — Frontend Application Controller
+ * Laya (లయ) — Frontend Application Controller
  * Pressure-Free Consistency & Natural Cadence Engine
  */
 
 (function () {
   'use strict';
 
+  // ==========================================================================
+  // Progressive Disclosure & Feature Toggles
+  // ==========================================================================
+  const DEFAULT_FEATURES = {
+    milestones: true,
+    quantified: true,
+    radialDial: true,
+    micronotes: true,
+    schedules: true,
+  };
+
+  function loadFeatures() {
+    try {
+      const saved = localStorage.getItem('laya_features');
+      if (saved) {
+        return { ...DEFAULT_FEATURES, ...JSON.parse(saved) };
+      }
+    } catch (_) {}
+    return { ...DEFAULT_FEATURES };
+  }
+
+  function saveFeatures(features) {
+    try {
+      localStorage.setItem('laya_features', JSON.stringify(features));
+    } catch (_) {}
+  }
+
+  // ==========================================================================
   // State
+  // ==========================================================================
   const state = {
     userId: 'usr_alice_123',
     token: 'token_for_alice', // In test/dev, Fastify mock verifier accepts this token
@@ -16,9 +45,13 @@
     checklist: null,
     summary: null,
     onboardingSlide: 1,
+    features: loadFeatures(),
+    currentOtp: '',
   };
 
+  // ==========================================================================
   // DOM Elements
+  // ==========================================================================
   const el = {
     dateText: document.getElementById('operational-date-text'),
     feed: document.getElementById('task-feed'),
@@ -33,6 +66,7 @@
     networkBadge: document.getElementById('network-badge'),
 
     // Radial Dial
+    dialCardContainer: document.getElementById('dial-card-container'),
     svgDial: document.getElementById('rhythm-svg-dial'),
     dialPercentage: document.getElementById('dial-center-percentage'),
     dialLegend: document.getElementById('dial-legend'),
@@ -53,9 +87,24 @@
     modalTask: document.getElementById('modal-task-backdrop'),
     modalGroup: document.getElementById('modal-group-backdrop'),
     modalOnboarding: document.getElementById('modal-onboarding-backdrop'),
+    modalCapabilities: document.getElementById('modal-capabilities-backdrop'),
     modalSponsor: document.getElementById('modal-sponsor-backdrop'),
     modalFeedback: document.getElementById('modal-feedback-backdrop'),
     modalData: document.getElementById('modal-data-backdrop'),
+    modalOtp: document.getElementById('modal-otp-backdrop'),
+
+    // OTP Elements
+    otpExpectedCode: document.getElementById('otp-expected-code'),
+    otpInputField: document.getElementById('otp-input-field'),
+    btnConfirmPurge: document.getElementById('btn-confirm-purge'),
+    otpErrorMsg: document.getElementById('otp-error-msg'),
+
+    // Capability toggles
+    toggleFeatMilestones: document.getElementById('toggle-feat-milestones'),
+    toggleFeatQuantified: document.getElementById('toggle-feat-quantified'),
+    toggleFeatRadialDial: document.getElementById('toggle-feat-radial-dial'),
+    toggleFeatMicronotes: document.getElementById('toggle-feat-micronotes'),
+    toggleFeatSchedules: document.getElementById('toggle-feat-schedules'),
   };
 
   // ==========================================================================
@@ -88,6 +137,7 @@
   async function init() {
     setupEventListeners();
     setupNetworkMonitor();
+    applyFeaturesToUi();
 
     try {
       await refreshAllData();
@@ -178,7 +228,7 @@
     await api('/api/v1/tasks', {
       method: 'POST',
       body: JSON.stringify({
-        title: 'Drink 3 Liters of Water',
+        title: 'Drink Water Throughout Day',
         groupId: healthGroup?.group?.id,
         taskType: 'milestone',
         recurrence: 'daily',
@@ -187,11 +237,11 @@
       }),
     }).catch(() => null);
 
-    // Flavor B: Continuous Percentage Task
+    // Flavor B: Quantified Target Task (e.g. 10 min, 40 g, 1 kg, 3 L, 50 pages)
     await api('/api/v1/tasks', {
       method: 'POST',
       body: JSON.stringify({
-        title: 'Deep Work: Read Architecture Book',
+        title: 'Deep Focus Reading',
         groupId: workGroup?.group?.id,
         taskType: 'percentage',
         recurrence: 'daily',
@@ -213,9 +263,70 @@
   }
 
   // ==========================================================================
+  // Progressive Disclosure: Apply Features to UI (Forward-Only Guarantee)
+  // ==========================================================================
+  function applyFeaturesToUi() {
+    // 1. Dynamic Task Creation Type Dropdown (affects NEW tasks only)
+    const currentVal = el.taskTypeSelect.value;
+    let typeOptionsHtml = '<option value="checklist">Standard Checklist (Yes/No)</option>';
+
+    if (state.features.milestones) {
+      typeOptionsHtml += '<option value="milestone">Discrete Milestones (1L, 2L, 3L)</option>';
+    }
+    if (state.features.quantified) {
+      typeOptionsHtml += '<option value="percentage">Quantified Target (e.g. 10 min, 40 g, 3 L)</option>';
+    }
+
+    el.taskTypeSelect.innerHTML = typeOptionsHtml;
+
+    // Preserve selection if valid, otherwise fallback to checklist
+    const options = Array.from(el.taskTypeSelect.options).map((o) => o.value);
+    if (options.includes(currentVal)) {
+      el.taskTypeSelect.value = currentVal;
+    } else {
+      el.taskTypeSelect.value = 'checklist';
+    }
+    syncTaskTypeFormFields();
+
+    // 2. Schedule Cadence Dropdown (affects NEW tasks only)
+    const currentRec = el.recurrenceSelect.value;
+    let recOptionsHtml = `
+      <option value="daily">Daily (Appears every day)</option>
+      <option value="anytime">Anytime Backlog (No fixed deadline)</option>
+    `;
+    if (state.features.schedules) {
+      recOptionsHtml += `
+        <option value="workweek">Standard Workweek (Mon–Fri)</option>
+        <option value="custom">Custom Interval (e.g. every 5 days)</option>
+      `;
+    }
+    el.recurrenceSelect.innerHTML = recOptionsHtml;
+    const recOptions = Array.from(el.recurrenceSelect.options).map((o) => o.value);
+    if (recOptions.includes(currentRec)) {
+      el.recurrenceSelect.value = currentRec;
+    } else {
+      el.recurrenceSelect.value = 'daily';
+    }
+    el.cycleDaysGroup.hidden = el.recurrenceSelect.value !== 'custom';
+
+    // 3. Radial Rhythm Dial Card visibility
+    if (el.dialCardContainer) {
+      el.dialCardContainer.hidden = !state.features.radialDial;
+    }
+  }
+
+  function syncTaskTypeFormFields() {
+    const selectedType = el.taskTypeSelect.value;
+    el.milestonesGroup.hidden = selectedType !== 'milestone';
+    el.percentageGroup.hidden = selectedType !== 'percentage';
+  }
+
+  // ==========================================================================
   // Concentric Radial Rhythm Dial Rendering
   // ==========================================================================
   function renderDial() {
+    if (!state.features.radialDial || !el.svgDial) return;
+
     const svg = el.svgDial;
     svg.innerHTML = '';
 
@@ -225,7 +336,7 @@
     const groups = state.checklist?.groupBreakdowns || [];
     const defaultColors = ['#10B981', '#06B6D4', '#8B5CF6', '#F59E0B'];
 
-    // Radii for concentric rings: Outer (105), Middle (85), Inner (65)
+    // Radii for concentric rings: Outer (105), Middle (85), Inner (65), Deep (45)
     const baseRadii = [105, 85, 65, 45];
     const legendItems = [];
 
@@ -316,7 +427,7 @@
   }
 
   // ==========================================================================
-  // Checklist Feed Rendering
+  // Checklist Feed Rendering (Rule 3: Forward-Only Guarantee Honored)
   // ==========================================================================
   function renderChecklist() {
     const feed = el.feed;
@@ -371,20 +482,21 @@
     const groupColor = group?.color || '#8B5CF6';
     const groupName = group?.name || 'General';
 
-    // Micro-notes if present
+    // Micro-notes if present and enabled
     const existingNote = evaluation.notes && evaluation.notes.length > 0 ? evaluation.notes[evaluation.notes.length - 1] : '';
+    const showNotes = state.features.micronotes;
 
     return `
       <article class="task-card ${statusClass}" data-task-id="${task.id}" id="card-${task.id}">
         <div class="task-card-main">
           <div class="task-identity">
-            <span class="task-type-badge">${task.taskType}</span>
+            <span class="task-type-badge">${task.taskType === 'percentage' ? 'Quantified' : task.taskType}</span>
             <div>
               <h3 class="task-title">${escapeHtml(task.title)}</h3>
               <div class="task-group-tag">
                 <span class="task-tag-dot" style="background: ${groupColor}"></span>
                 <span>${escapeHtml(groupName)}</span>
-                ${task.unit ? `<span>• Unit: ${escapeHtml(task.unit)}</span>` : ''}
+                ${task.targetValue && task.unit ? `<span>• Goal: ${Number(task.targetValue)} ${escapeHtml(task.unit)}</span>` : task.unit ? `<span>• Unit: ${escapeHtml(task.unit)}</span>` : ''}
               </div>
             </div>
           </div>
@@ -403,19 +515,21 @@
           </div>
         </div>
 
-        <!-- Optional Micro-Notes Row -->
+        ${showNotes ? `
+        <!-- Micro-Notes Row -->
         <div class="task-notes-row">
           <span style="font-size: 0.8rem; color: var(--text-subtle);">💬 Note:</span>
           <input type="text" class="note-input" data-task-id="${task.id}" 
                  value="${escapeHtml(existingNote)}" 
-                 placeholder="Optional context (e.g. fever rest, read ch. 3)..." maxlength="280">
+                 placeholder="Optional context (e.g. fever rest, read ch. 3, did extra reps)..." maxlength="280">
         </div>
+        ` : ''}
       </article>
     `;
   }
 
   function renderTaskInteractiveControls(task, milestones, evaluation) {
-    // 1. Discrete Milestones Flavor
+    // 1. Discrete Milestones Flavor (Forward-Only: always preserved if task was created as milestone)
     if (task.taskType === 'milestone') {
       const completedSet = new Set(evaluation.completedMilestoneIds || []);
       const pills = (milestones || []).map((m) => {
@@ -433,15 +547,44 @@
       return `<div class="milestones-pills-row">${pills}</div>`;
     }
 
-    // 2. Continuous Percentage Flavor
+    // 2. Quantified Target / Continuous Percentage Flavor (Forward-Only)
     if (task.taskType === 'percentage') {
       const currentPct = Math.round(evaluation.progressPercentage || 0);
+      const targetVal = task.targetValue ? Number(task.targetValue) : null;
+      const unit = task.unit || '';
+
+      if (targetVal) {
+        // Quantified task with concrete amount and unit (e.g. 10 min, 40 g, 1 kg, 3 L, 50 pages)
+        const currentAmount = Math.round((currentPct / 100) * targetVal * 10) / 10;
+        return `
+          <div class="quantified-control-wrap">
+            <span class="quantified-pill-target" title="Logged ${currentAmount} of ${targetVal} ${escapeHtml(unit)}">
+              ${currentAmount} / ${targetVal} ${escapeHtml(unit)} (${currentPct}%)
+            </span>
+            <button class="quantified-quick-btn ${currentPct === 25 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="25">25%</button>
+            <button class="quantified-quick-btn ${currentPct === 50 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="50">50%</button>
+            <button class="quantified-quick-btn ${currentPct === 75 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="75">75%</button>
+            <button class="quantified-quick-btn ${currentPct === 100 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="100">100%</button>
+            <input type="number" class="quantified-direct-input" 
+                   data-action="input-quantified" 
+                   data-task-id="${task.id}" 
+                   data-target="${targetVal}"
+                   value="${currentAmount}" 
+                   step="any" 
+                   min="0" 
+                   max="${targetVal}" 
+                   title="Enter exact ${escapeHtml(unit)} logged">
+          </div>
+        `;
+      }
+
+      // Fallback abstract percentage
       return `
         <div class="percentage-control-wrap">
-          <button class="percentage-btn" data-action="set-pct" data-task-id="${task.id}" data-pct="25">25%</button>
-          <button class="percentage-btn" data-action="set-pct" data-task-id="${task.id}" data-pct="50">50%</button>
-          <button class="percentage-btn" data-action="set-pct" data-task-id="${task.id}" data-pct="75">75%</button>
-          <button class="percentage-btn" data-action="set-pct" data-task-id="${task.id}" data-pct="100">100%</button>
+          <button class="percentage-btn ${currentPct === 25 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="25">25%</button>
+          <button class="percentage-btn ${currentPct === 50 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="50">50%</button>
+          <button class="percentage-btn ${currentPct === 75 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="75">75%</button>
+          <button class="percentage-btn ${currentPct === 100 ? 'active' : ''}" data-action="set-pct" data-task-id="${task.id}" data-pct="100">100%</button>
           <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-progress); min-width: 36px;">${currentPct}%</span>
         </div>
       `;
@@ -484,7 +627,7 @@
       renderChecklist();
     });
 
-    // 3. Interactive Checklist Actions
+    // 3. Interactive Checklist Actions (Click)
     el.feed.addEventListener('click', async (e) => {
       const target = e.target.closest('[data-action]');
       if (!target) return;
@@ -506,7 +649,7 @@
         });
       } else if (action === 'set-pct') {
         const pct = parseFloat(target.dataset.pct);
-        const status = pct >= 100 ? 'done' : 'in_progress';
+        const status = pct >= 100 ? 'done' : pct > 0 ? 'in_progress' : 'pending';
         await logEvent(taskId, {
           status,
           progressPercentage: pct,
@@ -519,7 +662,26 @@
       }
     });
 
-    // 4. Micro-Note Save on Enter / Blur
+    // 4. Quantified Direct Numeric Input
+    el.feed.addEventListener('change', async (e) => {
+      if (e.target.dataset.action === 'input-quantified') {
+        const taskId = e.target.dataset.taskId;
+        const targetVal = parseFloat(e.target.dataset.target);
+        const enteredVal = parseFloat(e.target.value);
+
+        if (isNaN(enteredVal) || enteredVal < 0 || !targetVal) return;
+
+        const calculatedPct = Math.min(100, Math.max(0, (enteredVal / targetVal) * 100));
+        const status = calculatedPct >= 100 ? 'done' : calculatedPct > 0 ? 'in_progress' : 'pending';
+
+        await logEvent(taskId, {
+          status,
+          progressPercentage: Math.round(calculatedPct * 100) / 100,
+        });
+      }
+    });
+
+    // 5. Micro-Note Save on Enter / Blur
     el.feed.addEventListener('change', async (e) => {
       if (!e.target.classList.contains('note-input')) return;
       const taskId = e.target.dataset.taskId;
@@ -532,20 +694,19 @@
       });
     });
 
-    // 5. Task Creation Flavor Conditional Inputs
-    el.taskTypeSelect.addEventListener('change', (e) => {
-      const val = e.target.value;
-      el.milestonesGroup.hidden = val !== 'milestone';
-      el.percentageGroup.hidden = val !== 'percentage';
+    // 6. Task Creation Dynamic Flavor Conditional Inputs
+    el.taskTypeSelect.addEventListener('change', () => {
+      syncTaskTypeFormFields();
     });
 
-    // 6. Recurrence Conditional Inputs
+    // 7. Recurrence Conditional Inputs
     el.recurrenceSelect.addEventListener('change', (e) => {
       el.cycleDaysGroup.hidden = e.target.value !== 'custom';
     });
 
-    // 7. Modal Openers
+    // 8. Modal Openers
     document.getElementById('btn-create-task-modal').addEventListener('click', () => {
+      syncTaskTypeFormFields();
       el.modalTask.hidden = false;
     });
 
@@ -559,6 +720,16 @@
       el.modalOnboarding.hidden = false;
     });
 
+    // Cadence Modules / Feature Toggles Modal Opener
+    document.getElementById('btn-capabilities').addEventListener('click', () => {
+      el.toggleFeatMilestones.checked = !!state.features.milestones;
+      el.toggleFeatQuantified.checked = !!state.features.quantified;
+      el.toggleFeatRadialDial.checked = !!state.features.radialDial;
+      el.toggleFeatMicronotes.checked = !!state.features.micronotes;
+      el.toggleFeatSchedules.checked = !!state.features.schedules;
+      el.modalCapabilities.hidden = false;
+    });
+
     document.getElementById('btn-sponsor').addEventListener('click', () => {
       el.modalSponsor.hidden = false;
     });
@@ -569,6 +740,34 @@
 
     document.getElementById('btn-data-portability').addEventListener('click', () => {
       el.modalData.hidden = false;
+    });
+
+    // 9. OTP Data Purge Modal Trigger
+    document.getElementById('btn-trigger-otp-purge').addEventListener('click', () => {
+      // Generate 6-digit confirmation code
+      state.currentOtp = String(Math.floor(100000 + Math.random() * 900000));
+      el.otpExpectedCode.textContent = state.currentOtp;
+      el.otpInputField.value = '';
+      el.btnConfirmPurge.disabled = true;
+      el.otpErrorMsg.hidden = true;
+      el.modalOtp.hidden = false;
+    });
+
+    // OTP Input validation
+    el.otpInputField.addEventListener('input', (e) => {
+      const entered = e.target.value.trim();
+      const isMatch = entered === state.currentOtp;
+      el.btnConfirmPurge.disabled = !isMatch;
+      el.otpErrorMsg.hidden = !entered || entered.length < 6 || isMatch;
+    });
+
+    // OTP Purge Execution
+    el.btnConfirmPurge.addEventListener('click', () => {
+      if (el.otpInputField.value.trim() === state.currentOtp) {
+        localStorage.clear();
+        alert('Local tracker cache successfully cleared.');
+        location.reload();
+      }
     });
 
     // Modal Closers
@@ -596,17 +795,27 @@
   }
 
   function setupFormSubmissions() {
-    // 1. Create Task Form
+    // 1. Create Task Form (Dynamic based on selected type)
     document.getElementById('form-create-task').addEventListener('submit', async (e) => {
       e.preventDefault();
       const title = document.getElementById('task-title-input').value.trim();
       const groupId = document.getElementById('task-group-select').value || null;
       const taskType = document.getElementById('task-type-select').value;
       const recurrence = document.getElementById('task-recurrence-select').value;
-      const targetVal = document.getElementById('task-target-val').value;
-      const unit = document.getElementById('task-unit-input').value.trim() || null;
 
-      let milestones;
+      let targetValue = null;
+      let unit = null;
+      let milestones = null;
+
+      // Handle Quantified Target fields
+      if (taskType === 'percentage') {
+        const rawTarget = document.getElementById('task-target-val').value;
+        const rawUnit = document.getElementById('task-unit-input').value.trim();
+        targetValue = rawTarget ? parseFloat(rawTarget) : 100;
+        unit = rawUnit || 'units';
+      }
+
+      // Handle Milestones fields
       if (taskType === 'milestone') {
         const rawSteps = document.getElementById('task-milestones-input').value;
         milestones = rawSteps.split(',').map((s) => s.trim()).filter(Boolean);
@@ -626,7 +835,7 @@
             taskType,
             recurrence,
             cycleDays,
-            targetValue: targetVal ? parseFloat(targetVal) : null,
+            targetValue,
             unit,
             milestones,
           }),
@@ -661,7 +870,24 @@
       }
     });
 
-    // 3. Feedback Form
+    // 3. Save Capabilities & Feature Preferences
+    document.getElementById('btn-save-capabilities').addEventListener('click', () => {
+      state.features = {
+        milestones: el.toggleFeatMilestones.checked,
+        quantified: el.toggleFeatQuantified.checked,
+        radialDial: el.toggleFeatRadialDial.checked,
+        micronotes: el.toggleFeatMicronotes.checked,
+        schedules: el.toggleFeatSchedules.checked,
+      };
+
+      saveFeatures(state.features);
+      applyFeaturesToUi();
+      renderDial();
+      renderChecklist();
+      el.modalCapabilities.hidden = true;
+    });
+
+    // 4. Feedback Form
     document.getElementById('form-feedback').addEventListener('submit', async (e) => {
       e.preventDefault();
       const category = document.getElementById('feedback-category').value;
@@ -681,7 +907,7 @@
       }
     });
 
-    // 4. Export JSON Backup
+    // 5. Export JSON Backup
     document.getElementById('btn-export-json').addEventListener('click', async () => {
       try {
         const res = await api('/api/v1/data/export');
@@ -697,7 +923,7 @@
       }
     });
 
-    // 5. Restore JSON Backup
+    // 6. Restore JSON Backup
     document.getElementById('import-json-file').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -720,14 +946,6 @@
       };
       reader.readAsText(file);
     });
-
-    // 6. Clear Local Data
-    document.getElementById('btn-clear-local-data').addEventListener('click', () => {
-      if (confirm('Clear local app session cache?')) {
-        localStorage.clear();
-        location.reload();
-      }
-    });
   }
 
   function setupModalClosers() {
@@ -736,6 +954,7 @@
       ['btn-cancel-task', el.modalTask],
       ['btn-close-group-modal', el.modalGroup],
       ['btn-cancel-group', el.modalGroup],
+      ['btn-close-capabilities', el.modalCapabilities],
       ['btn-close-onboarding', el.modalOnboarding],
       ['btn-close-sponsor', el.modalSponsor],
       ['btn-dismiss-sponsor', el.modalSponsor],
@@ -743,6 +962,8 @@
       ['btn-cancel-feedback', el.modalFeedback],
       ['btn-close-data', el.modalData],
       ['btn-dismiss-data', el.modalData],
+      ['btn-close-otp', el.modalOtp],
+      ['btn-cancel-otp', el.modalOtp],
     ];
 
     pairs.forEach(([btnId, modal]) => {

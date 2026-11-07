@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Recurrence & Work Schedule Evaluator
+ * Laya (లయ) — Recurrence & Work Schedule Evaluator
  * Evaluates whether tasks are due on a specific operational day based on:
  * - Workweek models (Mon–Fri, Tue–Sat, Sun–Thu)
  * - Specific day masks ([Mon, Wed, Fri])

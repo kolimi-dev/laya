@@ -1,5 +1,5 @@
 /**
- * Laya (लय) — Domain Types & Contracts
+ * Laya (లయ) — Domain Types & Contracts
  * Pure TypeScript types adhering to Kolimi Studio ground rules:
  * - Strict type-prefixed identifiers (usr_, grp_, tsk_, mls_, evt_)
  * - Strict UTC timestamps
