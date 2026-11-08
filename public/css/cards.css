@@ -1,0 +1,98 @@
+/**
+ * Laya (లయ) — Task Cards, Buckets & Feed
+ */
+
+.task-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.task-card:hover {
+  border-color: var(--border-active);
+  transform: translateY(-1px);
+}
+
+.task-card.status-done {
+  border-left: 4px solid var(--color-done);
+}
+
+.task-card.status-ignored {
+  border-left: 4px solid var(--color-ignored);
+  background: var(--color-ignored-bg);
+  opacity: 0.85;
+}
+
+.task-card.status-in_progress {
+  border-left: 4px solid var(--color-progress);
+}
+
+.task-card-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.task-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.task-type-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+}
+
+.task-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.task-group-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.task-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}

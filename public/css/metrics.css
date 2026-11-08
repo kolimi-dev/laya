@@ -1,0 +1,197 @@
+/**
+ * Laya (లయ) — Radial Dial Hero & Mathematical Consistency Formula
+ */
+
+.dashboard-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 860px) {
+  .dashboard-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.dial-mode-badge, .math-pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(139, 92, 246, 0.12);
+  color: #C4B5FD;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+.dial-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.svg-dial-wrapper {
+  position: relative;
+  width: 240px;
+  height: 240px;
+}
+
+.rhythm-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.rhythm-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.05);
+}
+
+.rhythm-ring-fg {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dial-center-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.dial-percentage {
+  font-family: var(--font-heading);
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-main);
+  background: linear-gradient(135deg, #FFFFFF, #CBD5E1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dial-caption {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.dial-subcaption {
+  font-size: 0.7rem;
+  color: var(--color-done);
+  margin-top: 4px;
+}
+
+.dial-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.legend-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+}
+
+.formula-box {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.formula-text {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--color-progress);
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
+.formula-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.metric-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.metric-val {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.metric-item.highlight-done .metric-val { color: var(--color-done); }
+.metric-item.highlight-ignored .metric-val { color: var(--color-ignored); }
+.metric-item.highlight-active .metric-val { color: var(--color-progress); }
