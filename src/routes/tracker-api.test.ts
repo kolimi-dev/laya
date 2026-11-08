@@ -529,4 +529,42 @@ describe('Laya Tracker Fastify API Endpoints', () => {
     });
     expect(bobEventRes.statusCode).toBe(404);
   });
+
+  // 11. Closed-Beta Telemetry Logging & Ingestion
+  it('ingests client telemetry events and returns query results', async () => {
+    const { app } = await createTestApp();
+
+    const telemetryRes = await app.inject({
+      method: 'POST',
+      url: '/api/v1/telemetry',
+      headers: authHeaderA,
+      payload: {
+        events: [
+          {
+            id: 'log_test_1',
+            timestamp: new Date().toISOString(),
+            type: 'action',
+            name: 'task_completed',
+            data: { taskId: 'tsk_123', status: 'done' },
+            device: { screen: '390x844', isStandalone: true },
+          },
+        ],
+      },
+    });
+
+    expect(telemetryRes.statusCode).toBe(201);
+    expect(telemetryRes.json().success).toBe(true);
+    expect(telemetryRes.json().ingestedCount).toBe(1);
+
+    const getRes = await app.inject({
+      method: 'GET',
+      url: '/api/v1/telemetry',
+      headers: authHeaderA,
+    });
+
+    expect(getRes.statusCode).toBe(200);
+    const logs = getRes.json().logs;
+    expect(logs.length).toBeGreaterThanOrEqual(1);
+    expect(logs[0].name).toBe('task_completed');
+  });
 });

@@ -16,6 +16,7 @@ import { taskRoutes } from './routes/tasks.js';
 import { consistencyRoutes } from './routes/consistency.js';
 import { dataRoutes } from './routes/data.js';
 import { feedbackRoutes } from './routes/feedback.js';
+import { telemetryRoutes } from './routes/telemetry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,6 +76,7 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
     await protectedApp.register(consistencyRoutes, { repository });
     await protectedApp.register(dataRoutes, { repository });
     await protectedApp.register(feedbackRoutes);
+    await protectedApp.register(telemetryRoutes);
   });
 
   return app;
