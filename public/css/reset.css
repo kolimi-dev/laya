@@ -1,0 +1,34 @@
+/**
+ * Laya (లయ) — Base Reset & Defensive Visibility
+ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Universal Defensive Hidden Reset — Guarantees component display styles never override conditional visibility */
+[hidden],
+[hidden="true"],
+.flavor-conditional[hidden],
+.frequency-subgroup[hidden],
+.form-row[hidden],
+.modal-backdrop[hidden],
+.carousel-slide[hidden],
+.custom-date-inputs[hidden],
+.section-view[hidden] {
+  display: none !important;
+}
+
+body.theme-dark {
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}

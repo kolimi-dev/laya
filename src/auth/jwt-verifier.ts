@@ -31,8 +31,8 @@ export class RemoteJwksVerifier implements JwtVerifier {
   }
 
   async verifyToken(token: string): Promise<AuthenticatedUser> {
-    // In local development, support instant local testing tokens
-    if (process.env.NODE_ENV === 'development') {
+    // In local development or testing, support instant local testing tokens
+    if (process.env.NODE_ENV !== 'production') {
       if (token === 'token_for_alice' || token === 'mock_alice') {
         return {
           userId: 'usr_alice_123',

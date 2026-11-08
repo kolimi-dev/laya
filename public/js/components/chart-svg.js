@@ -1,0 +1,193 @@
+/**
+ * Laya (లయ) — SVG Chart Rendering Engines
+ * High-performance vector charts: Volume Bar, Rhythm Matrix, Cumulative Trend Line
+ */
+
+import { escapeHtml } from '../core/api.js';
+
+export function generateTaskChartSvg(task, events, chartType, windowDates) {
+  const startDate = new Date(windowDates.from);
+  const endDate = new Date(windowDates.to);
+  const dayCount = Math.max(7, Math.min(60, Math.ceil((endDate - startDate) / 86400000)));
+
+  const dayMap = new Map();
+  events.forEach((ev) => {
+    const dayStr = ev.occurredAt.slice(0, 10);
+    const list = dayMap.get(dayStr) || [];
+    list.push(ev);
+    dayMap.set(dayStr, list);
+  });
+
+  const targetVal = task.targetValue ? Number(task.targetValue) : 100;
+  const unit = task.unit || (task.taskType === 'percentage' ? '%' : 'pts');
+
+  let totalAmount = 0;
+  let completedDays = 0;
+  let ignoredDays = 0;
+  const dailyPoints = [];
+
+  for (let i = dayCount - 1; i >= 0; i--) {
+    const d = new Date(endDate.getTime() - i * 86400000);
+    const dayKey = d.toISOString().slice(0, 10);
+    const dayEvs = dayMap.get(dayKey) || [];
+
+    let isDone = false;
+    let isIgnored = false;
+    let dayVal = 0;
+
+    dayEvs.forEach((ev) => {
+      if (ev.status === 'ignored') isIgnored = true;
+      if (ev.status === 'done') isDone = true;
+      if (ev.progressPercentage !== undefined && ev.progressPercentage !== null) {
+        const val = (ev.progressPercentage / 100) * targetVal;
+        if (val > dayVal) dayVal = val;
+      } else if (ev.status === 'done') {
+        dayVal = targetVal;
+      }
+    });
+
+    if (isIgnored) ignoredDays++;
+    if (isDone || dayVal >= targetVal) completedDays++;
+    totalAmount += dayVal;
+
+    dailyPoints.push({
+      date: d,
+      dayKey,
+      value: dayVal,
+      isDone,
+      isIgnored,
+      label: d.toLocaleDateString(undefined, { weekday: 'narrow', month: 'numeric', day: 'numeric' }),
+    });
+  }
+
+  const avg = dailyPoints.length > 0 ? (totalAmount / dailyPoints.length) : 0;
+
+  if (chartType === 'volume_bar') {
+    return renderVolumeBarSvg(dailyPoints, targetVal, unit, totalAmount, avg, completedDays, ignoredDays);
+  }
+  if (chartType === 'rhythm_matrix') {
+    return renderRhythmMatrixSvg(dailyPoints, targetVal, unit, completedDays, ignoredDays);
+  }
+  return renderTrendLineSvg(dailyPoints, targetVal, unit, totalAmount, avg);
+}
+
+function renderVolumeBarSvg(dailyPoints, targetVal, unit, totalAmount, avg, completedDays, ignoredDays) {
+  const maxVal = Math.max(targetVal * 1.2, ...dailyPoints.map((p) => p.value), 1);
+  const svgW = 460;
+  const svgH = 170;
+  const padL = 35;
+  const padR = 15;
+  const padT = 20;
+  const padB = 25;
+  const plotW = svgW - padL - padR;
+  const plotH = svgH - padT - padB;
+  const barWidth = Math.max(4, Math.min(18, (plotW / dailyPoints.length) - 3));
+  const targetY = padT + plotH - (targetVal / maxVal) * plotH;
+
+  let barsSvg = '';
+  dailyPoints.forEach((p, idx) => {
+    const x = padL + (idx * (plotW / dailyPoints.length)) + ((plotW / dailyPoints.length) - barWidth) / 2;
+    const bH = Math.max(2, (p.value / maxVal) * plotH);
+    const y = padT + plotH - bH;
+    const color = p.isIgnored ? '#64748B' : p.value >= targetVal ? '#10B981' : p.value > 0 ? '#06B6D4' : 'rgba(255,255,255,0.06)';
+
+    barsSvg += `
+      <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth}" height="${bH.toFixed(1)}" rx="3" fill="${color}">
+        <title>${p.dayKey}: ${Math.round(p.value * 10) / 10} ${escapeHtml(unit)} ${p.isIgnored ? '(Rest Day)' : ''}</title>
+      </rect>
+    `;
+  });
+
+  const svgHtml = `
+    <svg class="chart-svg" viewBox="0 0 ${svgW} ${svgH}">
+      <line x1="${padL}" y1="${targetY}" x2="${svgW - padR}" y2="${targetY}" stroke="rgba(6, 182, 212, 0.4)" stroke-dasharray="4,4" stroke-width="1.5" />
+      <text x="${svgW - padR}" y="${targetY - 4}" fill="#06B6D4" font-size="10" text-anchor="end" font-weight="600">Goal: ${targetVal} ${escapeHtml(unit)}</text>
+      <line x1="${padL}" y1="${padT + plotH}" x2="${svgW - padR}" y2="${padT + plotH}" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
+      ${barsSvg}
+    </svg>
+  `;
+
+  const summaryHtml = `
+    <span class="chart-stat-item">Total: <strong>${Math.round(totalAmount * 10) / 10} ${escapeHtml(unit)}</strong></span>
+    <span class="chart-stat-item">Daily Avg: <strong>${Math.round(avg * 10) / 10} ${escapeHtml(unit)}</strong></span>
+    <span class="chart-stat-item">Target Met: <strong>${completedDays} days</strong></span>
+    ${ignoredDays > 0 ? `<span class="chart-stat-item" style="color:var(--color-ignored);">Rest: <strong>${ignoredDays} days</strong></span>` : ''}
+  `;
+  return { svgHtml, summaryHtml };
+}
+
+function renderRhythmMatrixSvg(dailyPoints, targetVal, unit, completedDays, ignoredDays) {
+  const blockSize = 14;
+  const gap = 4;
+  const cols = Math.min(dailyPoints.length, 30);
+  const startIdx = Math.max(0, dailyPoints.length - cols);
+  const slice = dailyPoints.slice(startIdx);
+
+  let blocksSvg = '';
+  slice.forEach((p, idx) => {
+    const x = 30 + idx * (blockSize + gap);
+    const y = 50;
+    let fill = 'rgba(255,255,255,0.06)';
+    if (p.isIgnored) fill = '#64748B';
+    else if (p.isDone || p.value >= targetVal) fill = '#10B981';
+    else if (p.value > 0) fill = '#06B6D4';
+
+    blocksSvg += `
+      <rect x="${x}" y="${y}" width="${blockSize}" height="${blockSize}" rx="3" fill="${fill}">
+        <title>${p.dayKey}: ${p.isIgnored ? 'Rest Day (Exempt)' : p.isDone ? 'Completed' : p.value > 0 ? `${Math.round(p.value)} ${escapeHtml(unit)}` : 'Open'}</title>
+      </rect>
+      ${idx % 5 === 0 ? `<text x="${x}" y="${y + blockSize + 16}" fill="rgba(255,255,255,0.4)" font-size="9">${p.date.getDate()}/${p.date.getMonth() + 1}</text>` : ''}
+    `;
+  });
+
+  const svgHtml = `
+    <svg class="chart-svg" viewBox="0 0 540 140">
+      <text x="30" y="30" fill="rgba(255,255,255,0.6)" font-size="11" font-weight="500">Daily Rhythm Matrix (Last ${slice.length} Days)</text>
+      ${blocksSvg}
+    </svg>
+  `;
+
+  const summaryHtml = `
+    <span class="chart-stat-item"><span style="color:#10B981;">■</span> Done: <strong>${completedDays}</strong></span>
+    <span class="chart-stat-item"><span style="color:#64748B;">■</span> Rest/Exempt: <strong>${ignoredDays}</strong></span>
+    <span class="chart-stat-item">Active Days: <strong>${completedDays + ignoredDays}</strong></span>
+  `;
+  return { svgHtml, summaryHtml };
+}
+
+function renderTrendLineSvg(dailyPoints, targetVal, unit, totalAmount, avg) {
+  let cumulative = 0;
+  const trendPoints = dailyPoints.map((p) => {
+    cumulative += p.value;
+    return { ...p, cum: cumulative };
+  });
+
+  const maxCum = Math.max(1, cumulative);
+  const svgW = 460;
+  const svgH = 170;
+  const padL = 35;
+  const padR = 15;
+  const padT = 20;
+  const padB = 25;
+  const plotW = svgW - padL - padR;
+  const plotH = svgH - padT - padB;
+
+  const pointsStr = trendPoints.map((p, idx) => {
+    const x = padL + (idx / (trendPoints.length - 1)) * plotW;
+    const y = padT + plotH - (p.cum / maxCum) * plotH;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+
+  const svgHtml = `
+    <svg class="chart-svg" viewBox="0 0 ${svgW} ${svgH}">
+      <line x1="${padL}" y1="${padT + plotH}" x2="${svgW - padR}" y2="${padT + plotH}" stroke="rgba(255,255,255,0.1)" stroke-width="1" />
+      <polyline fill="none" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${pointsStr}" />
+    </svg>
+  `;
+
+  const summaryHtml = `
+    <span class="chart-stat-item">Cumulative: <strong>${Math.round(cumulative * 10) / 10} ${escapeHtml(unit)}</strong></span>
+    <span class="chart-stat-item">Daily Pace: <strong>${Math.round(avg * 10) / 10} ${escapeHtml(unit)}/day</strong></span>
+  `;
+  return { svgHtml, summaryHtml };
+}
