@@ -204,3 +204,4 @@ export function renderTaskInteractiveControls(task, milestones, evaluation) {
     </button>
   `;
 }
+

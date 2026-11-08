@@ -34,3 +34,4 @@ export function populateGroupSelects(selectEl, groups) {
     selectEl.innerHTML += `<option value="${g.id}">${escapeHtml(g.name)}</option>`;
   });
 }
+
