@@ -1,0 +1,25 @@
+{
+  "name": "Laya (లయ) — Consistency & Rhythm Tracker",
+  "short_name": "Laya",
+  "description": "Pressure-free habit consistency engine with guilt-free rest days and multi-flavor tracking.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B0F19",
+  "theme_color": "#0B0F19",
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
