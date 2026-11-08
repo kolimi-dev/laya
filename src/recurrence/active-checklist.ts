@@ -24,6 +24,7 @@ import {
   calculateGroupConsistencyScores,
 } from '../math/consistency-engine.js';
 import {
+  calculateDayDifference,
   getOperationalDate,
   isScheduleActiveOnDate,
 } from './schedule-evaluator.js';
@@ -91,11 +92,47 @@ export function computeActiveChecklist(
       .filter((m) => m.taskId === task.id)
       .sort((a, b) => a.stepOrder - b.stepOrder);
 
-    // Evaluate progress with events recorded for this operational day
+    // Filter events applicable to this task's recurrence window for this operational day
+    const taskEvents = events.filter((e) => {
+      if (e.taskId !== task.id) return false;
+      if (task.recurrence === 'anytime') return true; // Anytime tasks evaluate all historical events
+
+      const eventOperational = getOperationalDate(e.occurredAt, dayRolloverOptions);
+
+      if (
+        task.recurrence === 'daily' ||
+        task.recurrence === 'days_of_week' ||
+        task.recurrence === 'custom' ||
+        !task.recurrence
+      ) {
+        return eventOperational.dateString === operationalInfo.dateString;
+      }
+      if (task.recurrence === 'weekly') {
+        const diffDays = calculateDayDifference(eventOperational.dateString, operationalInfo.dateString);
+        return Math.abs(diffDays) < 7;
+      }
+      if (task.recurrence === 'monthly') {
+        return (
+          eventOperational.calendarYear === operationalInfo.calendarYear &&
+          eventOperational.calendarMonth === operationalInfo.calendarMonth
+        );
+      }
+      if (task.recurrence === 'quarterly') {
+        const evQ = Math.ceil(eventOperational.calendarMonth / 3);
+        const opQ = Math.ceil(operationalInfo.calendarMonth / 3);
+        return eventOperational.calendarYear === operationalInfo.calendarYear && evQ === opQ;
+      }
+      if (task.recurrence === 'yearly') {
+        return eventOperational.calendarYear === operationalInfo.calendarYear;
+      }
+      return eventOperational.dateString === operationalInfo.dateString;
+    });
+
+    // Evaluate progress with events recorded for this operational window
     const evaluation = evaluateTaskProgress({
       task,
       milestones: taskMilestones,
-      events,
+      events: taskEvents,
     });
 
     checklistItems.push({

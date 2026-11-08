@@ -336,5 +336,34 @@ describe('Active Checklist Engine ("Today\'s Checklist")', () => {
       expect(titles).toContain('Read 20 Pages');
       expect(titles).not.toContain('Morning 10m Stretch'); // Done, so excluded!
     });
+
+    it('isolates historical events by operational date so past events do not mark today daily task as done', () => {
+      // Event occurred on 2026-11-05 (yesterday relative to Friday 2026-11-06)
+      const pastEvents: CompletionEvent[] = [
+        {
+          ...baseAudit,
+          id: 'evt_past_stretch',
+          taskId: 'tsk_01H7AC12C3D4E5F6G7H8J9K002', // Stretch was done yesterday
+          userId: 'usr_01H7AB12C3D4E5F6G7H8J9K0L1',
+          status: 'done',
+          occurredAt: '2026-11-05T07:30:00.000Z',
+          recordedAt: '2026-11-05T07:30:01.000Z',
+        },
+      ];
+
+      const result = computeActiveChecklist({
+        tasks,
+        groups,
+        milestones,
+        events: pastEvents,
+        referenceTime: fridayTime, // 2026-11-06
+      });
+
+      const stretchItem = result.items.find((i) => i.task.title === 'Morning 10m Stretch');
+      expect(stretchItem).toBeDefined();
+      // On today (2026-11-06), Stretch must be pending, not done!
+      expect(stretchItem?.evaluation.status).toBe('pending');
+      expect(stretchItem?.evaluation.earnedPoints).toBe(0);
+    });
   });
 });
