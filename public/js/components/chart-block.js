@@ -127,6 +127,8 @@ export async function renderChartsView(el, state) {
             </div>
           </div>
           <div class="chart-block-actions">
+            <button class="btn-order-chart" data-action="move-chart-up" data-task-id="${task.id}" title="Move Chart Up">▲</button>
+            <button class="btn-order-chart" data-action="move-chart-down" data-task-id="${task.id}" title="Move Chart Down">▼</button>
             <select class="chart-block-type-select" data-action="change-chart-style" data-task-id="${task.id}">
               <option value="volume_bar" ${activeStyle === 'volume_bar' ? 'selected' : ''}>Daily Volume Bars</option>
               <option value="rhythm_matrix" ${activeStyle === 'rhythm_matrix' ? 'selected' : ''}>Rhythm Matrix</option>
@@ -170,6 +172,34 @@ export function setupChartBlockEvents(el, state, onChartsChanged) {
 
   if (el.taskChartsGrid) {
     el.taskChartsGrid.addEventListener('click', (e) => {
+      const moveUpBtn = e.target.closest('[data-action="move-chart-up"]');
+      if (moveUpBtn) {
+        const taskId = moveUpBtn.dataset.taskId;
+        const idx = state.pinnedCharts.findIndex((c) => c.taskId === taskId);
+        if (idx > 0) {
+          const item = state.pinnedCharts.splice(idx, 1)[0];
+          state.pinnedCharts.splice(idx - 1, 0, item);
+          savePinnedCharts(state.pinnedCharts);
+          renderChartsView(el, state);
+          if (typeof onChartsChanged === 'function') onChartsChanged();
+        }
+        return;
+      }
+
+      const moveDownBtn = e.target.closest('[data-action="move-chart-down"]');
+      if (moveDownBtn) {
+        const taskId = moveDownBtn.dataset.taskId;
+        const idx = state.pinnedCharts.findIndex((c) => c.taskId === taskId);
+        if (idx >= 0 && idx < state.pinnedCharts.length - 1) {
+          const item = state.pinnedCharts.splice(idx, 1)[0];
+          state.pinnedCharts.splice(idx + 1, 0, item);
+          savePinnedCharts(state.pinnedCharts);
+          renderChartsView(el, state);
+          if (typeof onChartsChanged === 'function') onChartsChanged();
+        }
+        return;
+      }
+
       const btn = e.target.closest('[data-action="remove-chart"]');
       if (!btn) return;
       const taskId = btn.dataset.taskId;
