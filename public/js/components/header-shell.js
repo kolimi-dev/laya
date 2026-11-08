@@ -38,3 +38,4 @@ export function updateOperationalDate(dateTextEl, operationalDate) {
     year: 'numeric',
   })}`;
 }
+

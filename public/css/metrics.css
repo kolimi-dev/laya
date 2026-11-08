@@ -195,3 +195,4 @@
 .metric-item.highlight-done .metric-val { color: var(--color-done); }
 .metric-item.highlight-ignored .metric-val { color: var(--color-ignored); }
 .metric-item.highlight-active .metric-val { color: var(--color-progress); }
+

@@ -191,3 +191,4 @@ function renderTrendLineSvg(dailyPoints, targetVal, unit, totalAmount, avg) {
   `;
   return { svgHtml, summaryHtml };
 }
+

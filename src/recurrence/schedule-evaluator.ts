@@ -214,7 +214,7 @@ export function isScheduleActiveOnDate(params: {
 /**
  * Calculates whole calendar days between two YYYY-MM-DD strings.
  */
-function calculateDayDifference(anchorDateStr: string, targetDateStr: string): number {
+export function calculateDayDifference(anchorDateStr: string, targetDateStr: string): number {
   const [ay, am, ad] = anchorDateStr.split('-').map(Number);
   const [ty, tm, td] = targetDateStr.split('-').map(Number);
 
