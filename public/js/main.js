@@ -20,6 +20,7 @@ import {
   setupFeedbackModal,
   seedSampleHabits,
 } from './components/system-modals.js';
+import { logTelemetry, setupGlobalErrorLogger } from './core/logger.js';
 
 // Central Reactive State
 const state = createInitialState();
@@ -100,7 +101,7 @@ async function refreshAllData() {
       saveCachedChecklist(state.checklist);
       updateOperationalDate(el.dateText, state.checklist.operationalDate);
     }
-    state.allTasks = (tasksRes.tasks || []).map((t) => t.task);
+    state.allTasks = (tasksRes.tasks || []).map((t) => ({ ...t.task, milestones: t.milestones }));
 
     populateGroupSelects(el.taskGroupSelect, state.groups);
     populateAddChartTaskSelect(el.selectChartTask, state);
@@ -125,6 +126,7 @@ function setupTaskViewInteractions() {
 
     const action = target.dataset.action;
     const taskId = target.dataset.taskId;
+    logTelemetry('action', action, { taskId });
 
     if (action === 'toggle-check') {
       const isChecked = target.classList.contains('checked');
@@ -179,6 +181,11 @@ function setupTaskViewInteractions() {
 }
 
 function init() {
+  setupGlobalErrorLogger();
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+
   // STAGE 1: Immediate Shell & Monitor Setup (0ms)
   setupNetworkMonitor(el.networkBadge);
   setupModalClosers([

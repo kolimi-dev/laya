@@ -20,6 +20,7 @@ export function generateTaskChartSvg(task, events, chartType, windowDates) {
 
   const targetVal = task.targetValue ? Number(task.targetValue) : 100;
   const unit = task.unit || (task.taskType === 'percentage' ? '%' : 'pts');
+  const totalMilestones = (task.milestones && task.milestones.length > 0) ? task.milestones.length : 4;
 
   let totalAmount = 0;
   let completedDays = 0;
@@ -34,27 +35,57 @@ export function generateTaskChartSvg(task, events, chartType, windowDates) {
     let isDone = false;
     let isIgnored = false;
     let dayVal = 0;
+    let dayPct = 0;
+    const completedMilestones = new Set();
 
     dayEvs.forEach((ev) => {
       if (ev.status === 'ignored') isIgnored = true;
-      if (ev.status === 'done') isDone = true;
+      if (ev.status === 'done') {
+        if (ev.milestoneId) {
+          completedMilestones.add(ev.milestoneId);
+        } else {
+          isDone = true;
+        }
+      }
       if (ev.progressPercentage !== undefined && ev.progressPercentage !== null) {
+        if (ev.progressPercentage > dayPct) dayPct = ev.progressPercentage;
         const val = (ev.progressPercentage / 100) * targetVal;
         if (val > dayVal) dayVal = val;
-      } else if (ev.status === 'done') {
-        dayVal = targetVal;
       }
     });
 
+    if (task.taskType === 'milestone') {
+      if (completedMilestones.size > 0) {
+        const mPct = Math.round((completedMilestones.size / totalMilestones) * 100);
+        if (mPct > dayPct) dayPct = mPct;
+        if (completedMilestones.size >= totalMilestones) isDone = true;
+      }
+      if (isDone) dayPct = 100;
+      dayVal = (dayPct / 100) * targetVal;
+    } else if (task.taskType === 'percentage') {
+      if (isDone) {
+        dayPct = 100;
+        dayVal = targetVal;
+      } else if (targetVal > 0) {
+        dayPct = Math.min(100, Math.round((dayVal / targetVal) * 100));
+      }
+    } else {
+      if (isDone) {
+        dayPct = 100;
+        dayVal = targetVal;
+      }
+    }
+
     if (isIgnored) ignoredDays++;
-    if (isDone || dayVal >= targetVal) completedDays++;
+    if (isDone || dayPct >= 100 || dayVal >= targetVal) completedDays++;
     totalAmount += dayVal;
 
     dailyPoints.push({
       date: d,
       dayKey,
       value: dayVal,
-      isDone,
+      pct: dayPct,
+      isDone: isDone || dayPct >= 100,
       isIgnored,
       label: d.toLocaleDateString(undefined, { weekday: 'narrow', month: 'numeric', day: 'numeric' }),
     });
@@ -127,14 +158,33 @@ function renderRhythmMatrixSvg(dailyPoints, targetVal, unit, completedDays, igno
   slice.forEach((p, idx) => {
     const x = 30 + idx * (blockSize + gap);
     const y = 50;
-    let fill = 'rgba(255,255,255,0.06)';
-    if (p.isIgnored) fill = '#64748B';
-    else if (p.isDone || p.value >= targetVal) fill = '#10B981';
-    else if (p.value > 0) fill = '#06B6D4';
+
+    // GitHub-style contribution squares reflecting completion intensity (0%, 25%, 50%, 75%, 100%)
+    let fill = 'rgba(255, 255, 255, 0.06)'; // Level 0: 0% completion
+    let intensity = 0;
+
+    if (p.isIgnored) {
+      fill = '#64748B'; // Rest / Exempt
+      intensity = -1;
+    } else if (p.pct >= 100 || p.isDone || p.value >= targetVal) {
+      fill = '#10B981'; // Level 4: 100% intensity (Full emerald)
+      intensity = 4;
+    } else if (p.pct >= 75) {
+      fill = '#059669'; // Level 3: 75% intensity
+      intensity = 3;
+    } else if (p.pct >= 50) {
+      fill = '#047857'; // Level 2: 50% intensity
+      intensity = 2;
+    } else if (p.pct >= 25 || p.pct > 0 || p.value > 0) {
+      fill = '#064e3b'; // Level 1: 25% intensity
+      intensity = 1;
+    }
+
+    const intensityLabel = p.isIgnored ? 'Rest Day (Exempt)' : `${p.pct || 0}% Completed`;
 
     blocksSvg += `
-      <rect x="${x}" y="${y}" width="${blockSize}" height="${blockSize}" rx="3" fill="${fill}">
-        <title>${p.dayKey}: ${p.isIgnored ? 'Rest Day (Exempt)' : p.isDone ? 'Completed' : p.value > 0 ? `${Math.round(p.value)} ${escapeHtml(unit)}` : 'Open'}</title>
+      <rect x="${x}" y="${y}" width="${blockSize}" height="${blockSize}" rx="3" fill="${fill}" data-intensity="${intensity}" data-pct="${p.pct || 0}">
+        <title>${p.dayKey}: ${intensityLabel}</title>
       </rect>
       ${idx % 5 === 0 ? `<text x="${x}" y="${y + blockSize + 16}" fill="rgba(255,255,255,0.4)" font-size="9">${p.date.getDate()}/${p.date.getMonth() + 1}</text>` : ''}
     `;

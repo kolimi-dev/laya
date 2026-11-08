@@ -107,6 +107,7 @@ export function renderTaskCard(item, state) {
             <span>${isPinned ? 'Pinned' : 'Chart'}</span>
           </button>
 
+          ${task.recurrence !== 'anytime' ? `
           <!-- Guilt-Free Ignore / Rest Action -->
           <button class="btn-ignore ${isIgnored ? 'ignored' : ''}" 
                   data-action="ignore" 
@@ -115,6 +116,7 @@ export function renderTaskCard(item, state) {
             <span>🌙</span>
             <span>${isIgnored ? 'Resting (Exempt)' : 'Rest / Skip'}</span>
           </button>
+          ` : ''}
         </div>
       </div>
 

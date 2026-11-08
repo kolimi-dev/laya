@@ -4,6 +4,7 @@
 
 import { api } from '../core/api.js';
 import { saveFeatures } from '../core/state.js';
+import { exportTelemetryFile, parseTelemetryLogFile } from '../core/logger.js';
 
 export function setupModalClosers(modalPairs) {
   modalPairs.forEach(([btnId, modal]) => {
@@ -161,6 +162,32 @@ export function setupDataPortability(el, state, refreshAllDataFn) {
         }
       };
       reader.readAsText(file);
+    });
+  }
+
+  const btnExportTelemetry = document.getElementById('btn-export-telemetry');
+  if (btnExportTelemetry) {
+    btnExportTelemetry.addEventListener('click', () => {
+      exportTelemetryFile(state.userId);
+    });
+  }
+
+  const importTelemetryInput = document.getElementById('import-telemetry-file');
+  if (importTelemetryInput) {
+    importTelemetryInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const summary = await parseTelemetryLogFile(file);
+        const actionDetails = Object.entries(summary.actionBreakdown)
+          .map(([k, v]) => `• ${k}: ${v}`)
+          .join('\n');
+        alert(
+          `Friend's Beta Telemetry Analyzed!\n\nUser: ${summary.userId}\nTotal Events: ${summary.totalEvents}\nScreen: ${summary.device.screen || 'unknown'}\nErrors Caught: ${summary.errorCount}\n\nKey Actions:\n${actionDetails || '(None recorded)'}`
+        );
+      } catch (err) {
+        alert(`Could not parse telemetry log: ${err.message}`);
+      }
     });
   }
 }
