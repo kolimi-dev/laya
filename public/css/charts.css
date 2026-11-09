@@ -16,7 +16,6 @@
 
 .task-chart-block {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 20px;
@@ -24,7 +23,7 @@
   flex-direction: column;
   gap: 16px;
   box-shadow: var(--shadow-card);
-  transition: border-color 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .task-chart-block:hover {
@@ -157,10 +156,9 @@
 }
 
 .time-chip.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #FFFFFF;
-  box-shadow: var(--shadow-glow);
+  background: #27272A;
+  border-color: #3F3F46;
+  color: #FAFAFA;
 }
 
 .custom-date-inputs {

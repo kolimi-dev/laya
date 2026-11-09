@@ -17,7 +17,6 @@
 
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -45,9 +44,9 @@
   font-weight: 500;
   padding: 3px 10px;
   border-radius: var(--radius-full);
-  background: rgba(139, 92, 246, 0.12);
-  color: #C4B5FD;
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: #1C1D24;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
 }
 
 .dial-container {
@@ -100,9 +99,6 @@
   font-weight: 800;
   line-height: 1;
   color: var(--text-main);
-  background: linear-gradient(135deg, #FFFFFF, #CBD5E1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .dial-caption {
@@ -143,7 +139,7 @@
 }
 
 .formula-box {
-  background: rgba(0, 0, 0, 0.25);
+  background: #121316;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 16px;

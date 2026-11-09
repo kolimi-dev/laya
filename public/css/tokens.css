@@ -1,47 +1,47 @@
 /**
  * Laya (లయ) — Design System Tokens
- * Core Color Palette, Typography, Glass & Radiuses
+ * Calm Minimalist Matte Dark Theme (Distraction-Free, Human-First)
  */
 
 :root {
-  /* Backgrounds & Glass Surfaces */
-  --bg-dark: #0B0F19;
-  --bg-card: rgba(17, 24, 39, 0.75);
-  --bg-card-hover: rgba(31, 41, 55, 0.85);
-  --bg-input: rgba(31, 41, 55, 0.6);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(255, 255, 255, 0.2);
+  /* Backgrounds & Solid Matte Surfaces (Zero Glassmorphism) */
+  --bg-dark: #0E0F12;
+  --bg-card: #16171B;
+  --bg-card-hover: #1C1D22;
+  --bg-input: #121316;
+  --border-subtle: #26272E;
+  --border-active: #363842;
 
-  /* Brand Accents */
-  --color-primary: #8B5CF6; /* Violet */
-  --color-primary-hover: #7C3AED;
-  --color-primary-glow: rgba(139, 92, 246, 0.35);
-  --color-done: #10B981; /* Emerald */
-  --color-done-glow: rgba(16, 185, 129, 0.3);
-  --color-progress: #06B6D4; /* Cyan */
-  --color-progress-glow: rgba(6, 182, 212, 0.3);
-  --color-ignored: #64748B; /* Serene Slate */
-  --color-ignored-bg: rgba(100, 116, 139, 0.15);
-  --color-warning: #F59E0B; /* Amber */
-  --color-danger: #EF4444; /* Rose */
+  /* Restrained, Grounded Accents */
+  --color-primary: #38BDF8; /* Calm Sky Slate */
+  --color-primary-hover: #0284C7;
+  --color-primary-glow: transparent;
+  --color-done: #22C55E; /* Natural Forest Green */
+  --color-done-glow: transparent;
+  --color-progress: #38BDF8; /* Calm Sky Blue */
+  --color-progress-glow: transparent;
+  --color-ignored: #71717A; /* Serene Stone Slate */
+  --color-ignored-bg: #1B1C22;
+  --color-warning: #F59E0B; /* Muted Amber */
+  --color-danger: #EF4444; /* Clean Rose */
 
-  /* Text Colors */
-  --text-main: #F9FAFB;
-  --text-muted: #9CA3AF;
-  --text-subtle: #6B7280;
+  /* Text Hierarchy */
+  --text-main: #F4F4F5;
+  --text-muted: #A1A1AA;
+  --text-subtle: #71717A;
 
   /* Typography */
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Shadows & Glows */
-  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.25);
+  /* Tactile Shadows (Zero Glowing Halos) */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-glow: none;
 
   /* Border Radiuses */
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
   --radius-full: 9999px;
 }
 

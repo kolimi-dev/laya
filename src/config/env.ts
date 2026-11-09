@@ -17,6 +17,12 @@ export const envSchema = z.object({
   JWKS_URL: z.string().url('JWKS_URL must be a valid URL').default('http://localhost:3000/.well-known/jwks.json'),
   JWT_ISSUER: z.string().default('https://platform.kolimi.dev'),
   JWT_AUDIENCE: z.string().default('kolimi_studio_apps'),
+  JWT_SECRET: z.string().default('laya_dev_jwt_secret_change_in_production_min32chars'),
+  ALLOW_BETA_TOKENS: z.coerce.boolean().default(false),
+
+  // Email OTP via Resend (kolimi.dev)
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().default('Laya <laya@kolimi.dev>'),
 
   // Optional PostgreSQL database URL (defaults to in-memory store in dev/test)
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid PostgreSQL connection URL').optional(),

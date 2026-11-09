@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,6 +12,7 @@ import { MockJwtVerifier, RemoteJwksVerifier } from './auth/jwt-verifier.js';
 import { createAuthPreHandler } from './auth/auth-middleware.js';
 import { registerErrorHandler } from './plugins/error-handler.js';
 import { healthRoutes } from './routes/health.js';
+import { authEmailRoutes } from './routes/auth-email.js';
 import { groupRoutes } from './routes/groups.js';
 import { taskRoutes } from './routes/tasks.js';
 import { consistencyRoutes } from './routes/consistency.js';
@@ -41,6 +43,14 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
+  // 1b. Rate Limiting (DDoS & Brute-Force Defense)
+  if (env.NODE_ENV !== 'test') {
+    await app.register(rateLimit, {
+      max: 120,
+      timeWindow: '1 minute',
+    });
+  }
+
   // 2. RFC 7807 Error Handler Plugin
   registerErrorHandler(app);
 
@@ -66,6 +76,7 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
 
   // 5. Public Routes
   await app.register(healthRoutes);
+  await app.register(authEmailRoutes);
 
   // 5. Authenticated Domain Routes
   await app.register(async (protectedApp) => {

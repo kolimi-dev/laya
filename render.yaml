@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: laya-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4001"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: ALLOW_BETA_TOKENS
+        value: "true"
+      - key: JWKS_URL
+        value: https://platform.kolimi.dev/.well-known/jwks.json

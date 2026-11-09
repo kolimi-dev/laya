@@ -31,8 +31,8 @@ export class RemoteJwksVerifier implements JwtVerifier {
   }
 
   async verifyToken(token: string): Promise<AuthenticatedUser> {
-    // In local development or testing, support instant local testing tokens
-    if (process.env.NODE_ENV !== 'production') {
+    // In local development, testing, or explicit beta mode, support instant testing tokens
+    if (process.env.NODE_ENV !== 'production' || process.env.ALLOW_BETA_TOKENS === 'true') {
       if (token === 'token_for_alice' || token === 'mock_alice') {
         return {
           userId: 'usr_alice_123',
@@ -57,6 +57,20 @@ export class RemoteJwksVerifier implements JwtVerifier {
           sessionId: 'sid_dev',
         };
       }
+    }
+
+    // Try local HMAC verification first (for standalone Email OTP tokens)
+    try {
+      const secret = new TextEncoder().encode(
+        process.env.JWT_SECRET || 'laya_dev_jwt_secret_change_in_production_min32chars'
+      );
+      const { payload } = await jose.jwtVerify(token, secret, {
+        issuer: this.issuer,
+        audience: this.audience,
+      });
+      return extractAuthenticatedUser(payload);
+    } catch {
+      // Fallback to remote JWKS if issued by platform IdP
     }
 
     try {

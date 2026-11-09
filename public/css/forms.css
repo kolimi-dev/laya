@@ -216,10 +216,9 @@ input:focus, select:focus, textarea:focus {
 }
 
 .day-pill.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #FFFFFF;
-  box-shadow: var(--shadow-glow);
+  background: #27272A;
+  border-color: #3F3F46;
+  color: #FAFAFA;
 }
 
 .input-with-prefix {
@@ -300,12 +299,12 @@ input:focus, select:focus, textarea:focus {
 }
 
 .forward-only-notice {
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: #181920;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 10px 14px;
   font-size: 0.8rem;
-  color: var(--text-main);
+  color: var(--text-muted);
   line-height: 1.4;
 }
 
