@@ -567,4 +567,48 @@ describe('Laya Tracker Fastify API Endpoints', () => {
     expect(logs.length).toBeGreaterThanOrEqual(1);
     expect(logs[0].name).toBe('task_completed');
   });
+
+  it('ingests mobile telemetry payload and strictly sanitizes PII fields', async () => {
+    const { app } = await createTestApp();
+
+    const mobileTelemetryRes = await app.inject({
+      method: 'POST',
+      url: '/api/v1/telemetry',
+      headers: authHeaderA,
+      payload: {
+        events: [
+          {
+            eventId: 'evt_mobile_999',
+            timestamp: new Date().toISOString(),
+            eventType: 'action',
+            eventName: 'toggle_complete',
+            metadata: {
+              taskId: 'tsk_water',
+              userPhoneNumber: '+919999999999',
+              authToken: 'Bearer secret_token_xyz',
+              safeMetric: 42,
+            },
+            device: { platform: 'android' },
+          },
+        ],
+      },
+    });
+
+    expect(mobileTelemetryRes.statusCode).toBe(201);
+    expect(mobileTelemetryRes.json().success).toBe(true);
+
+    const getRes = await app.inject({
+      method: 'GET',
+      url: '/api/v1/telemetry?limit=5',
+      headers: authHeaderA,
+    });
+
+    const logs = getRes.json().logs;
+    const sanitizedLog = logs.find((l: any) => l.id === 'evt_mobile_999');
+    expect(sanitizedLog).toBeDefined();
+    expect(sanitizedLog.name).toBe('toggle_complete');
+    expect(sanitizedLog.data.safeMetric).toBe(42);
+    expect(sanitizedLog.data.userPhoneNumber).toBe('[REDACTED]');
+    expect(sanitizedLog.data.authToken).toBe('[REDACTED]');
+  });
 });

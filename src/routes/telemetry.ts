@@ -7,14 +7,50 @@ import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { UserId } from '../domain/types.js';
 
-const TelemetryEventSchema = z.object({
-  id: z.string(),
-  timestamp: z.string(),
-  type: z.enum(['action', 'navigation', 'error', 'session']),
-  name: z.string(),
-  data: z.record(z.string(), z.any()).optional(),
-  device: z.record(z.string(), z.any()).optional(),
-});
+const TelemetryEventSchema = z
+  .object({
+    id: z.string().optional(),
+    eventId: z.string().optional(),
+    timestamp: z.string(),
+    type: z.enum(['action', 'navigation', 'error', 'session', 'metric']).optional(),
+    eventType: z.enum(['action', 'navigation', 'error', 'session', 'metric']).optional(),
+    name: z.string().optional(),
+    eventName: z.string().optional(),
+    data: z.record(z.string(), z.any()).optional(),
+    metadata: z.record(z.string(), z.any()).optional(),
+    device: z.record(z.string(), z.any()).optional(),
+    errorMessage: z.string().optional(),
+    errorStack: z.string().optional(),
+  })
+  .transform((raw) => {
+    const eventId = raw.id || raw.eventId || `evt_${Date.now()}`;
+    const eventType = (raw.type || raw.eventType || 'action') as
+      | 'action'
+      | 'navigation'
+      | 'error'
+      | 'session'
+      | 'metric';
+    const eventName = raw.name || raw.eventName || 'unnamed_event';
+    const data = { ...(raw.data || raw.metadata || {}) };
+    if (raw.errorMessage) {
+      data.errorMessage = raw.errorMessage;
+    }
+    // Strict PII sanitization: redact common sensitive fields
+    const sensitiveKeys = ['phone', 'token', 'auth', 'password', 'secret', 'email'];
+    for (const key of Object.keys(data)) {
+      if (sensitiveKeys.some((s) => key.toLowerCase().includes(s))) {
+        data[key] = '[REDACTED]';
+      }
+    }
+    return {
+      id: eventId,
+      timestamp: raw.timestamp,
+      type: eventType,
+      name: eventName,
+      data,
+      device: raw.device,
+    };
+  });
 
 const IngestTelemetrySchema = z.object({
   events: z.array(TelemetryEventSchema),
