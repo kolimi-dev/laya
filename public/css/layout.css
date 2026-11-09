@@ -13,7 +13,6 @@
   align-items: center;
   justify-content: space-between;
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 14px 20px;
@@ -37,7 +36,7 @@
 .date-headline {
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--text-main);
 }
 
@@ -45,9 +44,9 @@
   font-size: 0.75rem;
   padding: 2px 8px;
   border-radius: var(--radius-full);
-  background: rgba(6, 182, 212, 0.12);
+  background: #141E28;
   color: var(--color-progress);
-  border: 1px solid rgba(6, 182, 212, 0.25);
+  border: 1px solid #223547;
 }
 
 .day-actions {
@@ -98,12 +97,12 @@
   font-weight: 700;
   padding: 2px 7px;
   border-radius: var(--radius-full);
-  background: var(--color-primary);
-  color: #FFFFFF;
+  background: #27272A;
+  color: #FAFAFA;
 }
 
 .view-count-badge.subtle {
-  background: rgba(255, 255, 255, 0.12);
+  background: #1C1D22;
   color: var(--text-muted);
 }
 
@@ -135,25 +134,23 @@
 }
 
 .bucket-indicator {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: var(--radius-full);
   flex-shrink: 0;
 }
 
 .bucket-indicator.pending-dot {
   background: var(--color-warning);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
 }
 
 .bucket-indicator.done-dot {
   background: var(--color-done);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
 .bucket-title {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-main);
   letter-spacing: -0.01em;
@@ -164,15 +161,15 @@
   font-weight: 600;
   padding: 2px 8px;
   border-radius: var(--radius-full);
-  background: rgba(245, 158, 11, 0.15);
+  background: #251E13;
   color: var(--color-warning);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid #45341A;
 }
 
 .bucket-badge.done-badge {
-  background: rgba(16, 185, 129, 0.15);
+  background: #13241B;
   color: var(--color-done);
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: #1E3A2B;
 }
 
 .bucket-subtext {

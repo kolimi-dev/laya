@@ -6,33 +6,31 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, var(--color-primary), #6366F1);
-  color: #FFFFFF;
+  background: var(--text-main);
+  color: var(--bg-dark);
   border: none;
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--shadow-glow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: opacity 0.15s ease;
 }
 
 .primary-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.45);
+  opacity: 0.9;
 }
 
 .secondary-btn {
-  background: var(--bg-input);
+  background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
   padding: 8px 14px;
   border-radius: var(--radius-md);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .secondary-btn:hover {
@@ -51,7 +49,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-pin-chart:hover {
@@ -61,9 +59,9 @@
 }
 
 .btn-pin-chart.pinned {
-  background: rgba(139, 92, 246, 0.15);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  background: #1C232B;
+  color: var(--color-progress);
+  border-color: #2A3C4D;
 }
 
 .filter-group-tabs {
@@ -83,7 +81,7 @@
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -95,15 +93,14 @@
 }
 
 .group-tab.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #FFFFFF;
-  box-shadow: var(--shadow-glow);
+  background: #27272A;
+  border-color: #3F3F46;
+  color: #FAFAFA;
 }
 
 .btn-check-toggle {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
   border: 2px solid var(--border-active);
   background: transparent;
@@ -112,19 +109,18 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s ease;
 }
 
 .btn-check-toggle:hover {
   border-color: var(--color-done);
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(34, 197, 94, 0.08);
 }
 
 .btn-check-toggle.checked {
   border-color: var(--color-done);
   background: var(--color-done);
-  color: #FFFFFF;
-  box-shadow: var(--color-done-glow);
+  color: #0E0F12;
 }
 
 .milestones-pills-row {
@@ -143,7 +139,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .milestone-pill-btn:hover {
@@ -154,8 +150,7 @@
 .milestone-pill-btn.completed {
   background: var(--color-done);
   border-color: var(--color-done);
-  color: #FFFFFF;
-  box-shadow: var(--color-done-glow);
+  color: #0E0F12;
 }
 
 .quantified-control-wrap {
@@ -168,9 +163,9 @@
 .quantified-pill-target {
   font-size: 0.75rem;
   font-weight: 600;
-  background: rgba(6, 182, 212, 0.12);
+  background: #141E28;
   color: var(--color-progress);
-  border: 1px solid rgba(6, 182, 212, 0.25);
+  border: 1px solid #223547;
   padding: 4px 8px;
   border-radius: var(--radius-sm);
   white-space: nowrap;
@@ -195,9 +190,9 @@
 }
 
 .quantified-quick-btn.active {
-  background: rgba(6, 182, 212, 0.2);
+  background: #182836;
   border-color: var(--color-progress);
-  color: #FFFFFF;
+  color: #FAFAFA;
 }
 
 .quantified-direct-input {
@@ -229,7 +224,7 @@
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-ignore:hover {
@@ -239,9 +234,9 @@
 }
 
 .btn-ignore.ignored {
-  background: var(--color-ignored);
-  color: #FFFFFF;
-  border-color: var(--color-ignored);
+  background: #27272A;
+  color: #FAFAFA;
+  border-color: #52525B;
 }
 
 .task-notes-row {
