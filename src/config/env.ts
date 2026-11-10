@@ -22,7 +22,7 @@ export const envSchema = z.object({
 
   // Email OTP via Resend (kolimi.dev)
   RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().default('Laya <laya@kolimi.dev>'),
+  EMAIL_FROM: z.string().default('Kolimi ID <auth@kolimi.dev>'),
 
   // Optional PostgreSQL database URL (defaults to in-memory store in dev/test)
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid PostgreSQL connection URL').optional(),
