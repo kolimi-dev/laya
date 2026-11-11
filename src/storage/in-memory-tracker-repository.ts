@@ -17,6 +17,7 @@ import {
 } from '../domain/types.js';
 import { TaskNotFoundError } from '../domain/errors.js';
 import { computeActiveChecklist } from '../recurrence/active-checklist.js';
+import { exportFromMaps, importIntoMaps } from './data-portability-helper.js';
 import {
   RecordEventResult,
   TaskWithMilestones,
@@ -264,65 +265,14 @@ export class InMemoryTrackerRepository implements TrackerRepository {
 
   // 5. Data Portability (Export & Import)
   async exportUserData(userId: UserId): Promise<UserDataExport> {
-    const groups = Array.from(this.groups.values()).filter((g) => g.userId === userId && !g.deletedAt);
-    const tasks = Array.from(this.tasks.values()).filter((t) => t.userId === userId && !t.deletedAt);
-    const taskIds = new Set(tasks.map((t) => t.id));
-    const milestones = Array.from(this.milestones.values()).filter((m) => taskIds.has(m.taskId));
-    const events = Array.from(this.events.values()).filter((e) => e.userId === userId);
-
-    return {
-      exportedAt: new Date().toISOString(),
-      userId,
-      groups,
-      tasks,
-      milestones,
-      events,
-    };
+    return exportFromMaps(userId, this.groups, this.tasks, this.milestones, this.events);
   }
 
   async importUserData(
     userId: UserId,
     data: Omit<UserDataExport, 'exportedAt' | 'userId'>
   ): Promise<UserDataImportResult> {
-    let importedGroups = 0;
-    let importedTasks = 0;
-    let importedMilestones = 0;
-    let importedEvents = 0;
-
-    for (const g of data.groups) {
-      if (!this.groups.has(g.id)) {
-        this.groups.set(g.id, { ...g, userId });
-        importedGroups++;
-      }
-    }
-
-    for (const t of data.tasks) {
-      if (!this.tasks.has(t.id)) {
-        this.tasks.set(t.id, { ...t, userId });
-        importedTasks++;
-      }
-    }
-
-    for (const m of data.milestones) {
-      if (!this.milestones.has(m.id)) {
-        this.milestones.set(m.id, m);
-        importedMilestones++;
-      }
-    }
-
-    for (const e of data.events) {
-      if (!this.events.has(e.id)) {
-        this.events.set(e.id, { ...e, userId });
-        importedEvents++;
-      }
-    }
-
-    return {
-      importedGroups,
-      importedTasks,
-      importedMilestones,
-      importedEvents,
-    };
+    return importIntoMaps(userId, data, this.groups, this.tasks, this.milestones, this.events);
   }
 
   /**
