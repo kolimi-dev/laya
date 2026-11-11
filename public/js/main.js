@@ -18,10 +18,9 @@ import {
   setupOtpPurgeModal,
   setupDataPortability,
   setupFeedbackModal,
-  setupConsentModal,
-  setupLiveTelemetryModal,
-  seedSampleHabits,
 } from './components/system-modals.js';
+import { setupConsentModal, setupLiveTelemetryModal } from './components/telemetry-modal.js';
+import { seedSampleHabits } from './components/sample-data.js';
 import { setupAuthModal } from './components/auth-modal.js';
 import { setupProfileModal, updateUserBadge } from './components/profile-modal.js';
 import { logTelemetry, setupGlobalErrorLogger, startPeriodicTelemetryFlush } from './core/logger.js';
