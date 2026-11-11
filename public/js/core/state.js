@@ -52,10 +52,64 @@ export function saveCachedChecklist(checklist) {
   } catch (_) {}
 }
 
+export function loadAuthSession() {
+  try {
+    const saved = localStorage.getItem('laya_auth_session');
+    if (saved) return JSON.parse(saved);
+  } catch (_) {}
+  return null;
+}
+
+export function saveAuthSession(session) {
+  try {
+    if (session) {
+      localStorage.setItem('laya_auth_session', JSON.stringify(session));
+    } else {
+      localStorage.removeItem('laya_auth_session');
+    }
+  } catch (_) {}
+}
+
+export function loadUserProfile() {
+  try {
+    const saved = localStorage.getItem('laya_user_profile');
+    if (saved) return JSON.parse(saved);
+  } catch (_) {}
+  return { name: '', phone: '' };
+}
+
+export function saveUserProfile(profile) {
+  try {
+    localStorage.setItem('laya_user_profile', JSON.stringify(profile));
+  } catch (_) {}
+}
+
 export function createInitialState() {
+  const session = loadAuthSession();
+  const profile = loadUserProfile();
+  const isGuest = localStorage.getItem('laya_guest_mode') === 'true';
+
+  let userId = null;
+  let token = null;
+  let email = null;
+
+  if (session && session.user && session.session) {
+    userId = session.user.id;
+    token = session.session.accessToken;
+    email = session.user.email;
+  } else if (isGuest) {
+    userId = 'usr_guest';
+    token = 'token_for_guest';
+  }
+
   return {
-    userId: 'usr_alice_123',
-    token: 'token_for_alice', // Accepted in development mode
+    userId,
+    token,
+    email,
+    name: profile.name || (email ? email.split('@')[0] : 'Guest'),
+    phone: profile.phone || '',
+    isAuthenticated: !!session,
+    isGuest,
     activeView: 'tasks', // 'tasks' or 'charts'
     selectedGroupId: 'all',
     chartTimeRange: '30d', // 'week', 'month', '30d', '90d', '1y', 'custom'

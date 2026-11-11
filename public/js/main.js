@@ -21,6 +21,8 @@ import {
   setupConsentModal,
   seedSampleHabits,
 } from './components/system-modals.js';
+import { setupAuthModal } from './components/auth-modal.js';
+import { setupProfileModal, updateUserBadge } from './components/profile-modal.js';
 import { logTelemetry, setupGlobalErrorLogger } from './core/logger.js';
 
 // Central Reactive State
@@ -241,6 +243,17 @@ function init() {
   setupDataPortability(el, state, refreshAllData);
   setupFeedbackModal(el, state);
   setupConsentModal();
+  updateUserBadge(state);
+  setupAuthModal(state, () => {
+    refreshAllData();
+  });
+  setupProfileModal(state, () => {
+    state.checklist = null;
+    state.groups = [];
+    state.allTasks = [];
+    renderTodayChecklist(state, el);
+    updateViewTabBadges(state, el);
+  });
 
   const btnOnboarding = document.getElementById('btn-onboarding');
   if (btnOnboarding && el.modalOnboarding) {
@@ -260,12 +273,14 @@ function init() {
   updateViewTabBadges(state, el);
 
   // STAGE 3: Revalidate in Background
-  refreshAllData().then(async () => {
-    if (!state.checklist || state.checklist.items.length === 0) {
-      await seedSampleHabits(state.token);
-      await refreshAllData();
-    }
-  });
+  if (state.isAuthenticated || state.isGuest) {
+    refreshAllData().then(async () => {
+      if (!state.checklist || state.checklist.items.length === 0) {
+        await seedSampleHabits(state.token);
+        await refreshAllData();
+      }
+    });
+  }
 }
 
 if (document.readyState === 'loading') {

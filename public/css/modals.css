@@ -256,3 +256,303 @@
   to { transform: rotate(360deg); }
 }
 
+/* ─── Kolimi ID Auth & Profile Modals ─── */
+.auth-modal-card,
+.profile-modal-card {
+  max-width: 440px;
+}
+
+.auth-modal-body,
+.profile-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+.auth-code-input {
+  font-family: monospace;
+  font-size: 1.5rem !important;
+  letter-spacing: 8px;
+  text-align: center;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.auth-otp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px;
+  text-align: center;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.auth-feedback-box,
+.profile-feedback-box {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.825rem;
+  line-height: 1.4;
+}
+
+.auth-feedback-box.error,
+.profile-feedback-box.error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #F87171;
+}
+
+.auth-feedback-box.success,
+.profile-feedback-box.success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ADE80;
+}
+
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 6px 0;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.auth-divider span {
+  position: relative;
+  background: var(--bg-card);
+  padding: 0 10px;
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.auth-guest-btn {
+  width: 100%;
+  text-align: center;
+  padding: 9px;
+  font-size: 0.825rem;
+}
+
+.auth-oauth-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.auth-oauth-title {
+  font-size: 0.725rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.auth-oauth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.oauth-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.oauth-badge-status {
+  margin-left: auto;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+}
+
+/* Profile Modal Styles */
+.profile-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.profile-avatar-large {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.profile-headline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-id-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.btn-copy-mini {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+.btn-copy-mini:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--text-main);
+}
+
+.profile-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-field-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.readonly-input {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: var(--bg-surface) !important;
+}
+
+.profile-providers-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
+}
+
+.profile-section-heading {
+  font-size: 0.725rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.provider-rows-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.provider-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+}
+
+.provider-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.provider-title {
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.provider-meta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.provider-tag {
+  font-size: 0.675rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.provider-tag.connected {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ADE80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.provider-tag.pending {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.profile-modal-footer {
+  justify-content: space-between;
+}
+
+

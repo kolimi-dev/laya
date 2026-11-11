@@ -67,9 +67,9 @@
           <span id="theme-toggle-icon">🌙</span>
         </button>
 
-        <div class="user-badge" id="user-badge" title="Active Kolimi ID Session">
-          <span class="user-avatar">👤</span>
-          <span class="user-id-text" id="active-user-display">Alice (usr_alice_123)</span>
+        <div class="user-badge" id="user-badge" title="Kolimi ID Account & Profile" style="cursor: pointer;">
+          <span class="user-avatar" id="navbar-user-avatar">👤</span>
+          <span class="user-id-text" id="active-user-display">Sign In</span>
         </div>
       </div>
     </div>
@@ -696,6 +696,159 @@
           <button type="submit" class="btn-submit">Add Chart Block</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL 11: Kolimi ID Auth Gate (Email OTP Sign In / Sign Up) -->
+  <div class="modal-backdrop" id="modal-auth-backdrop" hidden>
+    <div class="modal-card auth-modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Kolimi ID</h3>
+          <p class="modal-subtitle">Universal passwordless access to Laya & the Kolimi ecosystem</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-auth-modal" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body auth-modal-body">
+        <!-- Step 1: Email Form -->
+        <div id="auth-step-email">
+          <label class="form-label" for="auth-email-input">Email Address</label>
+          <div class="auth-input-wrap">
+            <input type="email" id="auth-email-input" class="form-input" placeholder="you@domain.com" autocomplete="email" required />
+          </div>
+          <p class="form-hint">We'll send a 6-digit verification code from <code>auth@kolimi.dev</code>.</p>
+          <button type="button" class="btn-submit auth-submit-btn" id="btn-send-auth-code">Send Verification Code</button>
+        </div>
+
+        <!-- Step 2: OTP Verification Form (Hidden Initially) -->
+        <div id="auth-step-otp" hidden>
+          <label class="form-label" for="auth-code-input">6-Digit Verification Code</label>
+          <p class="form-hint" id="auth-otp-target-hint">Code sent to your email.</p>
+          <div class="auth-input-wrap">
+            <input type="text" id="auth-code-input" class="form-input auth-code-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+          </div>
+          <div class="auth-otp-actions">
+            <button type="button" class="btn-submit auth-submit-btn" id="btn-verify-auth-code">Verify & Sign In</button>
+            <button type="button" class="btn-link" id="btn-change-auth-email">Use different email</button>
+          </div>
+        </div>
+
+        <!-- Status / Error Feedback -->
+        <div class="auth-feedback-box" id="auth-feedback-box" hidden></div>
+
+        <!-- Alternative Access / Guest Mode -->
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+
+        <button type="button" class="btn-cancel auth-guest-btn" id="btn-auth-guest-mode">
+          Continue as Guest (Local Offline Mode)
+        </button>
+
+        <!-- OAuth SSO Integrations Preview -->
+        <div class="auth-oauth-section">
+          <span class="auth-oauth-title">Single Sign-On (SSO) Providers</span>
+          <div class="auth-oauth-grid">
+            <div class="oauth-badge-item" title="Google OAuth (Supported via Kolimi Platform)">
+              <span class="oauth-icon">🌐</span>
+              <span class="oauth-name">Google</span>
+              <span class="oauth-badge-status">Coming Soon</span>
+            </div>
+            <div class="oauth-badge-item" title="GitHub OAuth (Supported via Kolimi Platform)">
+              <span class="oauth-icon">🐙</span>
+              <span class="oauth-name">GitHub</span>
+              <span class="oauth-badge-status">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 12: Kolimi ID Profile & Connected Accounts -->
+  <div class="modal-backdrop" id="modal-profile-backdrop" hidden>
+    <div class="modal-card profile-modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Kolimi ID Profile</h3>
+        <button type="button" class="modal-close-btn" id="btn-close-profile-modal" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body profile-modal-body">
+        <div class="profile-summary-header">
+          <div class="profile-avatar-large" id="profile-avatar-large">👤</div>
+          <div class="profile-headline">
+            <div class="profile-name" id="profile-headline-name">Signed In Member</div>
+            <div class="profile-id-chip">
+              <span id="profile-user-id-chip">usr_...</span>
+              <button type="button" class="btn-copy-mini" id="btn-copy-user-id" title="Copy Kolimi ID">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-fields-list">
+          <div class="profile-field-item">
+            <label class="form-label">Display Name</label>
+            <input type="text" id="profile-name-input" class="form-input" placeholder="e.g. Alice Sharma" />
+          </div>
+
+          <div class="profile-field-item">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="profile-email-input" class="form-input readonly-input" readonly />
+          </div>
+
+          <div class="profile-field-item">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" id="profile-phone-input" class="form-input" placeholder="+1 (555) 000-0000" />
+          </div>
+        </div>
+
+        <!-- Connected Accounts & OAuth Providers Section -->
+        <div class="profile-providers-section">
+          <div class="profile-section-heading">Connected Identifiers & OAuth</div>
+          <div class="provider-rows-container">
+            <div class="provider-row active">
+              <div class="provider-left">
+                <span class="provider-icon">🔑</span>
+                <div>
+                  <div class="provider-title">Kolimi ID (Resend Email OTP)</div>
+                  <div class="provider-meta" id="profile-provider-email">auth@kolimi.dev</div>
+                </div>
+              </div>
+              <span class="provider-tag connected">Connected</span>
+            </div>
+
+            <div class="provider-row">
+              <div class="provider-left">
+                <span class="provider-icon">🌐</span>
+                <div>
+                  <div class="provider-title">Google Account</div>
+                  <div class="provider-meta">Federated Single Sign-On</div>
+                </div>
+              </div>
+              <span class="provider-tag pending">Link Account</span>
+            </div>
+
+            <div class="provider-row">
+              <div class="provider-left">
+                <span class="provider-icon">🐙</span>
+                <div>
+                  <div class="provider-title">GitHub Account</div>
+                  <div class="provider-meta">Developer SSO & Key Sync</div>
+                </div>
+              </div>
+              <span class="provider-tag pending">Link Account</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-feedback-box" id="profile-feedback-box" hidden></div>
+      </div>
+
+      <div class="modal-footer profile-modal-footer">
+        <button type="button" class="btn-cancel danger-btn" id="btn-profile-signout">Sign Out</button>
+        <button type="button" class="btn-submit" id="btn-save-profile">Save Changes</button>
+      </div>
     </div>
   </div>
 
