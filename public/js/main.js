@@ -6,7 +6,7 @@
 
 import { api, logEvent, setupNetworkMonitor } from './core/api.js';
 import { createInitialState, saveCachedChecklist, savePinnedCharts } from './core/state.js';
-import { updateViewTabBadges, switchView, updateOperationalDate } from './components/header-shell.js';
+import { updateViewTabBadges, switchView, updateOperationalDate, initThemeToggle } from './components/header-shell.js';
 import { renderGroupTabs, populateGroupSelects } from './components/group-tabs.js';
 import { renderTodayChecklist } from './components/task-card.js';
 import { setupTaskModal, applyFeaturesToUi } from './components/task-modal.js';
@@ -188,6 +188,7 @@ function init() {
 
   // STAGE 1: Immediate Shell & Monitor Setup (0ms)
   setupNetworkMonitor(el.networkBadge);
+  initThemeToggle();
   setupModalClosers([
     ['btn-close-task-modal', el.modalTask],
     ['btn-cancel-task', el.modalTask],

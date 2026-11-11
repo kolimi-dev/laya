@@ -31,7 +31,7 @@
   width: 38px;
   height: 38px;
   border-radius: var(--radius-md);
-  background: #1C1D22;
+  background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;

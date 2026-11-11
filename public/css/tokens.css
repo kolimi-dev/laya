@@ -45,3 +45,36 @@
   --radius-full: 9999px;
 }
 
+[data-theme="light"] {
+  /* Backgrounds & Solid Matte Surfaces (Clean High-Contrast Warm/Neutral Light) */
+  --bg-dark: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F1F5F9;
+  --bg-input: #F1F5F9;
+  --border-subtle: #E2E8F0;
+  --border-active: #CBD5E1;
+
+  /* Restrained, Grounded Accents */
+  --color-primary: #0284C7;
+  --color-primary-hover: #0369A1;
+  --color-primary-glow: transparent;
+  --color-done: #16A34A;
+  --color-done-glow: transparent;
+  --color-progress: #0284C7;
+  --color-progress-glow: transparent;
+  --color-ignored: #64748B;
+  --color-ignored-bg: #F1F5F9;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+
+  /* Text Hierarchy */
+  --text-main: #0F172A;
+  --text-muted: #475569;
+  --text-subtle: #64748B;
+
+  /* Tactile Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-glow: none;
+}
+
+

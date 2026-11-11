@@ -39,3 +39,31 @@ export function updateOperationalDate(dateTextEl, operationalDate) {
   })}`;
 }
 
+export function initThemeToggle() {
+  const savedTheme = localStorage.getItem('laya_theme') || 'dark';
+  applyTheme(savedTheme);
+
+  const btn = document.getElementById('btn-theme-toggle');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('laya_theme', next);
+    });
+  }
+}
+
+export function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = document.getElementById('theme-toggle-icon');
+  if (icon) {
+    icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+  }
+  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+  if (metaThemeColor) {
+    metaThemeColor.setAttribute('content', theme === 'dark' ? '#0E0F12' : '#F8FAFC');
+  }
+}
+
+
