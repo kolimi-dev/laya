@@ -126,3 +126,4 @@ export function setupProfileModal(state, onSignOut) {
     });
   }
 }
+
