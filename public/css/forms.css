@@ -270,26 +270,10 @@ input:focus, select:focus, textarea:focus {
   transition: all 0.2s ease;
 }
 
-.toggle-card:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-active);
-}
-
-.toggle-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.toggle-meta strong {
-  font-size: 0.875rem;
-  color: var(--text-main);
-}
-
-.toggle-meta small {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
+.toggle-card:hover { background: var(--bg-card-hover); border-color: var(--border-active); }
+.toggle-meta { display: flex; flex-direction: column; gap: 3px; }
+.toggle-meta strong { font-size: 0.875rem; color: var(--text-main); }
+.toggle-meta small { font-size: 0.75rem; color: var(--text-muted); }
 
 .toggle-card input[type="checkbox"] {
   width: 18px;

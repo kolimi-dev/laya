@@ -13,6 +13,7 @@
     "test:watch": "vitest src",
     "test:coverage": "vitest run --coverage src",
     "lint:arch": "depcruise --config .dependency-cruiser.cjs src",
+    "lint:lines": "node scripts/check-line-counts.js",
     "audit": "npm audit --audit-level=critical"
   },
   "keywords": [

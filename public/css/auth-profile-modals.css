@@ -269,15 +269,8 @@
   gap: 8px;
 }
 
-.provider-title {
-  font-weight: 500;
-  color: var(--text-main);
-}
-
-.provider-meta {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
+.provider-title { font-weight: 500; color: var(--text-main); }
+.provider-meta { font-size: 0.7rem; color: var(--text-muted); }
 
 .provider-tag {
   font-size: 0.675rem;
