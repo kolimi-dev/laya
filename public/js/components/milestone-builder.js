@@ -38,3 +38,4 @@ export function initDefaultMilestoneRows(listEl) {
     addMilestoneRow(listEl, '3L');
   }
 }
+

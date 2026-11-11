@@ -63,3 +63,4 @@ export function getDomElements() {
     toggleFeatSchedules: document.getElementById('toggle-feat-schedules'),
   };
 }
+

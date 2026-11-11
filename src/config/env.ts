@@ -14,7 +14,7 @@ export const envSchema = z.object({
   CORS_ORIGIN: z.string().default('*'),
 
   // Platform JWKS Authority
-  JWKS_URL: z.string().url('JWKS_URL must be a valid URL').default('http://localhost:3000/.well-known/jwks.json'),
+  JWKS_URL: z.string().url('JWKS_URL must be a valid URL').default('https://platform.kolimi.dev/.well-known/jwks.json'),
   JWT_ISSUER: z.string().default('https://platform.kolimi.dev'),
   JWT_AUDIENCE: z.string().default('kolimi_studio_apps'),
   JWT_SECRET: z.string().default('laya_dev_jwt_secret_change_in_production_min32chars'),

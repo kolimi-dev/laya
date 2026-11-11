@@ -106,3 +106,4 @@ export function setupLiveTelemetryModal(state) {
     btnRefresh.addEventListener('click', () => fetchStream());
   }
 }
+

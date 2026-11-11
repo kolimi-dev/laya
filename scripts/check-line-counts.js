@@ -52,3 +52,4 @@ if (breachCount > 0) {
   console.log(`✅ [LINE BUDGET PASSED] Checked ${fileCount} files. All files are under ${MAX_LINES} lines.\n`);
   process.exit(0);
 }
+
