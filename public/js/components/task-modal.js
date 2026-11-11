@@ -135,6 +135,43 @@ export function applyFeaturesToUi(el, state) {
   syncRecurrenceFormFields(el);
 }
 
+let currentEditingTaskId = null;
+
+export function openEditTaskModal(task, el) {
+  currentEditingTaskId = task.id;
+  const modalTitle = document.querySelector('#modal-task-backdrop .modal-title');
+  if (modalTitle) modalTitle.textContent = 'Edit Habit';
+
+  const submitBtn = document.querySelector('#form-create-task button[type="submit"]');
+  if (submitBtn) submitBtn.textContent = 'Save Changes';
+
+  const titleInput = document.getElementById('task-title-input');
+  if (titleInput) titleInput.value = task.title || '';
+
+  const groupSelect = document.getElementById('task-group-select');
+  if (groupSelect) groupSelect.value = task.groupId || '';
+
+  const typeSelect = document.getElementById('task-type-select');
+  if (typeSelect) typeSelect.value = task.taskType || 'checklist';
+
+  const targetInput = document.getElementById('task-target-val');
+  if (targetInput) targetInput.value = task.targetValue != null ? task.targetValue : '';
+
+  const unitInput = document.getElementById('task-unit-input');
+  if (unitInput) unitInput.value = task.unit || '';
+
+  const recurrenceSelect = document.getElementById('task-recurrence-select');
+  if (recurrenceSelect) recurrenceSelect.value = task.recurrence || 'daily';
+
+  const cycleDaysInput = document.getElementById('task-cycle-days');
+  if (cycleDaysInput) cycleDaysInput.value = task.cycleDays || '';
+
+  syncTaskTypeFormFields(el);
+  syncRecurrenceFormFields(el);
+
+  if (el.modalTask) el.modalTask.hidden = false;
+}
+
 export function setupTaskModal(el, state, refreshAllDataFn) {
   if (el.taskTypeSelect) {
     el.taskTypeSelect.addEventListener('change', () => syncTaskTypeFormFields(el));
@@ -159,16 +196,23 @@ export function setupTaskModal(el, state, refreshAllDataFn) {
     });
   }
 
+  const form = document.getElementById('form-create-task');
+
   const btnOpenModal = document.getElementById('btn-create-task-modal');
   if (btnOpenModal) {
     btnOpenModal.addEventListener('click', () => {
+      currentEditingTaskId = null;
+      const modalTitle = document.querySelector('#modal-task-backdrop .modal-title');
+      if (modalTitle) modalTitle.textContent = 'Create New Habit or Task';
+      const submitBtn = document.querySelector('#form-create-task button[type="submit"]');
+      if (submitBtn) submitBtn.textContent = 'Create Habit';
+      if (form) form.reset();
       syncTaskTypeFormFields(el);
       syncRecurrenceFormFields(el);
       if (el.modalTask) el.modalTask.hidden = false;
     });
   }
 
-  const form = document.getElementById('form-create-task');
   if (!form) return;
 
   form.addEventListener('submit', async (e) => {
@@ -224,28 +268,44 @@ export function setupTaskModal(el, state, refreshAllDataFn) {
     }
 
     try {
-      await api('/api/v1/tasks', {
-        method: 'POST',
-        body: JSON.stringify({
-          title,
-          groupId,
-          taskType,
-          recurrence,
-          cycleDays,
-          schedule,
-          targetValue,
-          unit,
-          milestones,
-        }),
-      }, state.token);
+      if (currentEditingTaskId) {
+        await api(`/api/v1/tasks/${currentEditingTaskId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            title,
+            groupId,
+            recurrence,
+            cycleDays,
+            schedule,
+            targetValue,
+            unit,
+          }),
+        }, state.token);
+      } else {
+        await api('/api/v1/tasks', {
+          method: 'POST',
+          body: JSON.stringify({
+            title,
+            groupId,
+            taskType,
+            recurrence,
+            cycleDays,
+            schedule,
+            targetValue,
+            unit,
+            milestones,
+          }),
+        }, state.token);
+      }
 
       if (el.modalTask) el.modalTask.hidden = true;
+      currentEditingTaskId = null;
       form.reset();
       syncTaskTypeFormFields(el);
       syncRecurrenceFormFields(el);
       if (typeof refreshAllDataFn === 'function') await refreshAllDataFn();
     } catch (err) {
-      alert(`Failed to create task: ${err.message}`);
+      alert(`Failed to save habit: ${err.message}`);
     }
   });
 }

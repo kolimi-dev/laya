@@ -107,6 +107,23 @@ export function renderTaskCard(item, state) {
             <span>${isPinned ? 'Pinned' : 'Chart'}</span>
           </button>
 
+          <!-- Edit Task Button -->
+          <button class="btn-task-action" 
+                  data-action="edit-task" 
+                  data-task-id="${task.id}" 
+                  title="Edit habit details, target, unit, or rhythm">
+            <span>✏️</span>
+            <span>Edit</span>
+          </button>
+
+          <!-- Delete Task Button -->
+          <button class="btn-task-action btn-task-delete" 
+                  data-action="delete-task" 
+                  data-task-id="${task.id}" 
+                  title="Delete habit">
+            <span>🗑️</span>
+          </button>
+
           ${task.recurrence !== 'anytime' ? `
           <!-- Guilt-Free Ignore / Rest Action -->
           <button class="btn-ignore ${isIgnored ? 'ignored' : ''}" 

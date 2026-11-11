@@ -9,7 +9,7 @@ import { createInitialState, saveCachedChecklist, savePinnedCharts } from './cor
 import { updateViewTabBadges, switchView, updateOperationalDate, initThemeToggle } from './components/header-shell.js';
 import { renderGroupTabs, populateGroupSelects } from './components/group-tabs.js';
 import { renderTodayChecklist } from './components/task-card.js';
-import { setupTaskModal, applyFeaturesToUi } from './components/task-modal.js';
+import { setupTaskModal, openEditTaskModal, applyFeaturesToUi } from './components/task-modal.js';
 import { renderChartsView, setupChartBlockEvents, populateAddChartTaskSelect } from './components/chart-block.js';
 import {
   setupModalClosers,
@@ -157,6 +157,21 @@ function setupTaskViewInteractions() {
       savePinnedCharts(state.pinnedCharts);
       renderTodayChecklist(state, el);
       updateViewTabBadges(state, el);
+    } else if (action === 'edit-task') {
+      const item = (state.checklist?.items || []).find((i) => i.task.id === taskId);
+      const task = item ? item.task : (state.allTasks || []).find((t) => (t.task?.id || t.id) === taskId)?.task;
+      if (task) openEditTaskModal(task, el);
+    } else if (action === 'delete-task') {
+      const item = (state.checklist?.items || []).find((i) => i.task.id === taskId);
+      const title = item ? item.task.title : 'this habit';
+      if (confirm(`Are you sure you want to delete "${title}"?`)) {
+        try {
+          await api(`/api/v1/tasks/${taskId}`, { method: 'DELETE' }, state.token);
+          await refreshAllData();
+        } catch (err) {
+          alert(`Failed to delete habit: ${err.message}`);
+        }
+      }
     }
   });
 
