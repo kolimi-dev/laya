@@ -33,7 +33,7 @@ export function logTelemetry(type, name, data = {}) {
       screen: `${window.innerWidth}x${window.innerHeight}`,
       pixelRatio: window.devicePixelRatio || 1,
       isStandalone: window.matchMedia('(display-mode: standalone)').matches || !!navigator.standalone,
-      platform: navigator.platform || 'unknown',
+      platform: navigator.platform || 'web',
     },
   };
 
@@ -42,6 +42,37 @@ export function logTelemetry(type, name, data = {}) {
   saveLogs(logs);
 
   return logEvent;
+}
+
+export async function flushTelemetry(token) {
+  const logs = getStoredLogs();
+  if (logs.length === 0 || !token) return;
+
+  try {
+    const res = await fetch('/api/v1/telemetry', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ events: logs }),
+    });
+
+    if (res.ok) {
+      saveLogs([]);
+    }
+  } catch (_) {
+    // Retain logs in local ring buffer until next sync attempt
+  }
+}
+
+export function startPeriodicTelemetryFlush(getStateFn, intervalMs = 30000) {
+  setInterval(() => {
+    const state = typeof getStateFn === 'function' ? getStateFn() : null;
+    if (state && state.token) {
+      flushTelemetry(state.token);
+    }
+  }, intervalMs);
 }
 
 export function exportTelemetryFile(userId = 'beta_user') {

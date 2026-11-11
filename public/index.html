@@ -619,6 +619,11 @@
             <input type="file" id="import-telemetry-file" accept=".json" hidden>
           </label>
         </div>
+        <div class="portability-actions" style="margin-top: 8px;">
+          <button class="secondary-btn" id="btn-open-live-telemetry" style="width: 100%; border-color: var(--color-primary); color: var(--color-primary);">
+            <span>📡 Open Live Server Telemetry Feed</span>
+          </button>
+        </div>
 
         <hr class="divider">
 
@@ -848,6 +853,42 @@
       <div class="modal-footer profile-modal-footer">
         <button type="button" class="btn-cancel danger-btn" id="btn-profile-signout">Sign Out</button>
         <button type="button" class="btn-submit" id="btn-save-profile">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 13: Live Server Telemetry Feed Inspector -->
+  <div class="modal-backdrop" id="modal-telemetry-backdrop" hidden>
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Live Server Telemetry Feed</h3>
+          <p class="modal-subtitle">Real-time event stream ingested from connected web and Android devices</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="btn-close-telemetry-stream" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body" style="gap: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--border-subtle);">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="btn-cancel" id="btn-refresh-telemetry" style="padding: 4px 10px; font-size: 0.75rem;">
+              🔄 Refresh
+            </button>
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; cursor: pointer;">
+              <input type="checkbox" id="check-auto-refresh-telemetry" checked />
+              Auto-poll (10s)
+            </label>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);" id="telemetry-count-badge">Loading events...</span>
+        </div>
+
+        <div id="telemetry-stream-feed" style="max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 0.75rem;">
+          <div style="text-align: center; padding: 20px; color: var(--text-muted);">Fetching server logs...</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" id="btn-dismiss-telemetry">Close</button>
       </div>
     </div>
   </div>

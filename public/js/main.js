@@ -19,11 +19,12 @@ import {
   setupDataPortability,
   setupFeedbackModal,
   setupConsentModal,
+  setupLiveTelemetryModal,
   seedSampleHabits,
 } from './components/system-modals.js';
 import { setupAuthModal } from './components/auth-modal.js';
 import { setupProfileModal, updateUserBadge } from './components/profile-modal.js';
-import { logTelemetry, setupGlobalErrorLogger } from './core/logger.js';
+import { logTelemetry, setupGlobalErrorLogger, startPeriodicTelemetryFlush } from './core/logger.js';
 
 // Central Reactive State
 const state = createInitialState();
@@ -258,6 +259,8 @@ function init() {
   setupDataPortability(el, state, refreshAllData);
   setupFeedbackModal(el, state);
   setupConsentModal();
+  setupLiveTelemetryModal(state);
+  startPeriodicTelemetryFlush(() => state);
   updateUserBadge(state);
   setupAuthModal(state, () => {
     refreshAllData();
