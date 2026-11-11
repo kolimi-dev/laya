@@ -316,3 +316,21 @@ export async function seedSampleHabits(token) {
   }
 }
 
+export function setupConsentModal() {
+  const backdrop = document.getElementById('modal-consent-backdrop');
+  const btnAgree = document.getElementById('btn-agree-consent');
+  const hasAgreed = localStorage.getItem('laya_consent_agreed');
+
+  if (!hasAgreed && backdrop) {
+    backdrop.hidden = false;
+  }
+
+  if (btnAgree && backdrop) {
+    btnAgree.addEventListener('click', () => {
+      localStorage.setItem('laya_consent_agreed', 'true');
+      backdrop.hidden = true;
+    });
+  }
+}
+
+

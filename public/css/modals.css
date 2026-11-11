@@ -19,7 +19,7 @@
 }
 
 .modal-card {
-  background: #16171B;
+  background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 18px 22px;
@@ -52,6 +52,38 @@
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-main);
+}
+
+.consent-card {
+  max-width: 480px;
+}
+.consent-intro {
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.consent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.consent-list li {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  padding-left: 4px;
+}
+.consent-note {
+  font-size: 11px;
+  color: var(--text-subtle);
+  line-height: 1.4;
+  margin-bottom: 16px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
 }
 
 .modal-close-btn {

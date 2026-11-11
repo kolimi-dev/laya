@@ -18,6 +18,7 @@ import {
   setupOtpPurgeModal,
   setupDataPortability,
   setupFeedbackModal,
+  setupConsentModal,
   seedSampleHabits,
 } from './components/system-modals.js';
 import { logTelemetry, setupGlobalErrorLogger } from './core/logger.js';
@@ -239,6 +240,7 @@ function init() {
   setupOtpPurgeModal(el, state);
   setupDataPortability(el, state, refreshAllData);
   setupFeedbackModal(el, state);
+  setupConsentModal();
 
   const btnOnboarding = document.getElementById('btn-onboarding');
   if (btnOnboarding && el.modalOnboarding) {
