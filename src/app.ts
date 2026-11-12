@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { Env, getEnv } from './config/env.js';
 import { TrackerRepository } from './storage/tracker-repository.js';
 import { InMemoryTrackerRepository } from './storage/in-memory-tracker-repository.js';
+import { PostgresTrackerRepository } from './storage/postgres-tracker-repository.js';
+import { getSql } from './storage/db.js';
 import { JwtVerifier } from './auth/types.js';
 import { MockJwtVerifier, RemoteJwksVerifier } from './auth/jwt-verifier.js';
 import { createAuthPreHandler } from './auth/auth-middleware.js';
@@ -55,7 +57,10 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
   registerErrorHandler(app);
 
   // 3. Dependency Injection
-  const repository = options.repository ?? new InMemoryTrackerRepository();
+  const sql = getSql();
+  const repository =
+    options.repository ??
+    (sql ? new PostgresTrackerRepository(sql) : new InMemoryTrackerRepository());
   const verifier =
     options.jwtVerifier ??
     (env.NODE_ENV === 'test'

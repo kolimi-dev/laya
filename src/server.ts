@@ -1,9 +1,11 @@
 import { buildApp } from './app.js';
 import { getEnv } from './config/env.js';
+import { getSql, closeDatabaseConnection } from './storage/db.js';
 
 async function start(): Promise<void> {
   const env = getEnv();
   const app = await buildApp();
+  const sql = getSql();
 
   try {
     const address = await app.listen({ port: env.PORT, host: env.HOST });
@@ -13,6 +15,7 @@ async function start(): Promise<void> {
     console.log(`   Health:   ${address}/api/v1/health`);
     console.log(`   Checklist: ${address}/api/v1/tasks/active`);
     console.log(`   JWKS:     ${env.JWKS_URL}`);
+    console.log(`   Storage:  ${sql ? 'PostgreSQL (Neon DB)' : 'In-Memory (Ephemeral)'}`);
     console.log(`   Mode:     ${env.NODE_ENV}`);
     console.log(`======================================================\n`);
   } catch (err) {
@@ -25,6 +28,7 @@ async function start(): Promise<void> {
     process.on(signal, async () => {
       console.log(`\n🛑 Received ${signal}, shutting down Laya gracefully...`);
       await app.close();
+      await closeDatabaseConnection();
       process.exit(0);
     });
   }
