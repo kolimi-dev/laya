@@ -39,3 +39,4 @@ export async function closeDatabaseConnection(): Promise<void> {
     sqlClient = null;
   }
 }
+

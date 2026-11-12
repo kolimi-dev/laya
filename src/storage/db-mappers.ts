@@ -73,3 +73,4 @@ export function mapRowToEvent(row: any): CompletionEvent {
     updatedBy: row.updated_by ?? null,
   };
 }
+
