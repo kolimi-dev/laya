@@ -14,7 +14,9 @@ export type TaskId = `tsk_${string}`;
 export type MilestoneId = `mls_${string}`;
 export type EventId = `evt_${string}` | string; // Client idempotency key: evt_ or UUID
 
-export type TaskType = 'checklist' | 'milestone' | 'percentage';
+export type TaskType = 'checklist' | 'milestone' | 'percentage' | 'quantified' | 'one_time';
+export type MilestoneMode = 'all' | 'any';
+export type TaskLifecycleStatus = 'active' | 'completed' | 'paused' | 'retired';
 export type TaskRecurrence = 'daily' | 'weekly' | 'days_of_week' | 'monthly' | 'quarterly' | 'yearly' | 'custom' | 'anytime';
 export type EventStatus = 'done' | 'in_progress' | 'ignored';
 export type TaskProgressStatus = 'pending' | 'in_progress' | 'done' | 'ignored';
@@ -106,6 +108,10 @@ export interface Task extends AuditFields {
   schedule?: WorkSchedule; // Task-level override schedule (inherits from group if undefined)
   reminders?: TaskReminderConfig[]; // Staged reminder schedule for this task
   targetValue?: number | null; // e.g. 100.00 for percentage
+  stepAmount?: number | null; // open decimal jump e.g. 0.5, 250 (ADR-0012)
+  milestoneMode?: MilestoneMode; // 'all' (AND) or 'any' (OR) (ADR-0012)
+  lifecycleStatus?: TaskLifecycleStatus; // 'active' | 'completed' | 'paused' | 'retired' (ADR-0011)
+  targetDate?: string | null; // Single target date for one-time tasks
   unit?: string | null; // e.g. 'L', 'pages', 'minutes', 'reps'
   sortOrder?: number;
   deletedAt?: string | null;
@@ -126,6 +132,8 @@ export interface CompletionEvent extends AuditFields {
   userId: UserId;
   status: EventStatus;
   progressPercentage?: number | null; // 0.00 to 100.00
+  quantifiedValue?: number | null; // Numerical progress value (ADR-0012)
+  skippedMilestones?: string[]; // IDs of skipped sub-steps (ADR-0012)
   notes?: string | null; // Micro-notes (e.g. 'Fever/Rest day', 'Read chapter 3')
   occurredAt: string; // ISO-8601 UTC (when user performed the action)
   recordedAt: string; // ISO-8601 UTC (when server/store recorded it)

@@ -45,8 +45,17 @@ export async function importUserDataSql(
 
   for (const t of data.tasks) {
     const [res] = await sql`
-      INSERT INTO tracker.tasks (id, user_id, group_id, title, task_type, recurrence, cycle_days, schedule, target_value, unit, sort_order, created_by)
-      VALUES (${t.id}, ${userId}, ${t.groupId ?? null}, ${t.title}, ${t.taskType}, ${t.recurrence}, ${t.cycleDays ?? null}, ${t.schedule ? sql.json(t.schedule) : null}, ${t.targetValue ?? null}, ${t.unit ?? null}, ${t.sortOrder ?? 0}, ${userId})
+      INSERT INTO tracker.tasks (
+        id, user_id, group_id, title, task_type, recurrence, cycle_days, schedule,
+        target_value, step_amount, milestone_mode, lifecycle_status, target_date,
+        unit, sort_order, created_by
+      ) VALUES (
+        ${t.id}, ${userId}, ${t.groupId ?? null}, ${t.title}, ${t.taskType}, ${t.recurrence},
+        ${t.cycleDays ?? null}, ${t.schedule ? sql.json(t.schedule) : null},
+        ${t.targetValue ?? null}, ${t.stepAmount ?? null},
+        ${t.milestoneMode ?? 'all'}, ${t.lifecycleStatus ?? 'active'},
+        ${t.targetDate ?? null}, ${t.unit ?? null}, ${t.sortOrder ?? 0}, ${userId}
+      )
       ON CONFLICT (id) DO NOTHING RETURNING id
     `;
     if (res) importedTasks++;
@@ -63,8 +72,15 @@ export async function importUserDataSql(
 
   for (const e of data.events) {
     const [res] = await sql`
-      INSERT INTO tracker.completion_events (id, task_id, milestone_id, user_id, status, progress_percentage, notes, occurred_at, recorded_at, created_by)
-      VALUES (${e.id}, ${e.taskId}, ${e.milestoneId ?? null}, ${userId}, ${e.status}, ${e.progressPercentage ?? null}, ${e.notes ?? null}, ${e.occurredAt}, ${e.recordedAt || new Date().toISOString()}, ${userId})
+      INSERT INTO tracker.completion_events (
+        id, task_id, milestone_id, user_id, status, progress_percentage,
+        quantified_value, skipped_milestones, notes, occurred_at, recorded_at, created_by
+      ) VALUES (
+        ${e.id}, ${e.taskId}, ${e.milestoneId ?? null}, ${userId}, ${e.status},
+        ${e.progressPercentage ?? null}, ${e.quantifiedValue ?? null},
+        ${e.skippedMilestones ? sql.json(e.skippedMilestones) : null},
+        ${e.notes ?? null}, ${e.occurredAt}, ${e.recordedAt || new Date().toISOString()}, ${userId}
+      )
       ON CONFLICT (id) DO NOTHING RETURNING id
     `;
     if (res) importedEvents++;

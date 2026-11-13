@@ -68,12 +68,15 @@ export class PostgresTrackerRepository implements TrackerRepository {
     const [row] = await this.sql`
       INSERT INTO tracker.tasks (
         id, user_id, group_id, title, task_type, recurrence, cycle_days,
-        schedule, target_value, unit, sort_order, created_by, updated_by
+        schedule, target_value, step_amount, milestone_mode, lifecycle_status, target_date,
+        unit, sort_order, created_by, updated_by
       ) VALUES (
         ${task.id}, ${task.userId}, ${task.groupId ?? null}, ${task.title},
         ${task.taskType}, ${task.recurrence}, ${task.cycleDays ?? null},
         ${task.schedule ? this.sql.json(task.schedule) : null},
-        ${task.targetValue ?? null}, ${task.unit ?? null}, ${task.sortOrder ?? 0},
+        ${task.targetValue ?? null}, ${task.stepAmount ?? null},
+        ${task.milestoneMode ?? 'all'}, ${task.lifecycleStatus ?? 'active'},
+        ${task.targetDate ?? null}, ${task.unit ?? null}, ${task.sortOrder ?? 0},
         ${task.createdBy ?? task.userId}, ${task.updatedBy ?? task.userId}
       )
       RETURNING *
@@ -155,6 +158,10 @@ export class PostgresTrackerRepository implements TrackerRepository {
 
     const title = updates.title ?? existing.task.title;
     const targetValue = updates.targetValue !== undefined ? updates.targetValue : existing.task.targetValue;
+    const stepAmount = updates.stepAmount !== undefined ? updates.stepAmount : existing.task.stepAmount;
+    const milestoneMode = updates.milestoneMode ?? existing.task.milestoneMode ?? 'all';
+    const lifecycleStatus = updates.lifecycleStatus ?? existing.task.lifecycleStatus ?? 'active';
+    const targetDate = updates.targetDate !== undefined ? updates.targetDate : existing.task.targetDate;
     const unit = updates.unit !== undefined ? updates.unit : existing.task.unit;
     const sortOrder = updates.sortOrder ?? existing.task.sortOrder ?? 0;
     const schedule = updates.schedule !== undefined ? updates.schedule : existing.task.schedule;
@@ -163,8 +170,11 @@ export class PostgresTrackerRepository implements TrackerRepository {
 
     const [row] = await this.sql`
       UPDATE tracker.tasks
-      SET title = ${title}, target_value = ${targetValue ?? null}, unit = ${unit ?? null},
-          sort_order = ${sortOrder}, recurrence = ${recurrence}, cycle_days = ${cycleDays ?? null},
+      SET title = ${title}, target_value = ${targetValue ?? null},
+          step_amount = ${stepAmount ?? null}, milestone_mode = ${milestoneMode},
+          lifecycle_status = ${lifecycleStatus}, target_date = ${targetDate ?? null},
+          unit = ${unit ?? null}, sort_order = ${sortOrder},
+          recurrence = ${recurrence}, cycle_days = ${cycleDays ?? null},
           schedule = ${schedule ? this.sql.json(schedule) : null},
           updated_at = NOW(), updated_by = ${userId}
       WHERE id = ${id} AND user_id = ${userId} AND deleted_at IS NULL
@@ -199,11 +209,13 @@ export class PostgresTrackerRepository implements TrackerRepository {
     const [inserted] = await this.sql`
       INSERT INTO tracker.completion_events (
         id, task_id, milestone_id, user_id, status, progress_percentage,
-        notes, occurred_at, recorded_at, created_by, updated_by
+        quantified_value, skipped_milestones, notes, occurred_at, recorded_at, created_by, updated_by
       ) VALUES (
         ${event.id}, ${event.taskId}, ${event.milestoneId ?? null}, ${event.userId},
-        ${event.status}, ${event.progressPercentage ?? null}, ${event.notes ?? null},
-        ${event.occurredAt}, ${event.recordedAt || new Date().toISOString()},
+        ${event.status}, ${event.progressPercentage ?? null},
+        ${event.quantifiedValue ?? null},
+        ${event.skippedMilestones ? this.sql.json(event.skippedMilestones) : null},
+        ${event.notes ?? null}, ${event.occurredAt}, ${event.recordedAt || new Date().toISOString()},
         ${event.createdBy ?? event.userId}, ${event.updatedBy ?? event.userId}
       )
       ON CONFLICT (id) DO NOTHING

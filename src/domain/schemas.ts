@@ -34,7 +34,9 @@ export const EventIdSchema = z
     { message: "EventId must be a valid 'evt_' prefixed string or UUID" }
   );
 
-export const TaskTypeSchema = z.enum(['checklist', 'milestone', 'percentage']);
+export const TaskTypeSchema = z.enum(['checklist', 'milestone', 'percentage', 'quantified', 'one_time']);
+export const MilestoneModeSchema = z.enum(['all', 'any']);
+export const TaskLifecycleStatusSchema = z.enum(['active', 'completed', 'paused', 'retired']);
 export const TaskRecurrenceSchema = z.enum(['daily', 'weekly', 'days_of_week', 'monthly', 'quarterly', 'yearly', 'custom', 'anytime']);
 export const EventStatusSchema = z.enum(['done', 'in_progress', 'ignored']);
 export const TaskProgressStatusSchema = z.enum([
@@ -162,6 +164,10 @@ export const CreateTaskInputSchema = z
     schedule: WorkScheduleSchema.optional(),
     reminders: z.array(TaskReminderConfigSchema).optional(),
     targetValue: z.number().positive('targetValue must be > 0').optional().nullable(),
+    stepAmount: z.number().positive('stepAmount must be > 0').optional().nullable(),
+    milestoneMode: MilestoneModeSchema.optional().default('all'),
+    lifecycleStatus: TaskLifecycleStatusSchema.optional().default('active'),
+    targetDate: DateStringSchema.optional().nullable(),
     unit: z.string().trim().max(24).optional().nullable(),
     sortOrder: z.number().int().optional(),
     milestones: z
@@ -200,6 +206,8 @@ export const RecordCompletionEventInputSchema = z
       .max(100.0, 'Progress percentage cannot exceed 100.00')
       .optional()
       .nullable(),
+    quantifiedValue: z.number().nonnegative().optional().nullable(),
+    skippedMilestones: z.array(z.string()).optional().nullable(),
     notes: z.string().trim().max(280, 'Notes cannot exceed 280 characters').optional().nullable(),
     occurredAt: UtcTimestampSchema,
   })
@@ -231,6 +239,10 @@ export const UpdateTaskInputSchema = z.object({
   schedule: WorkScheduleSchema.optional(),
   reminders: z.array(TaskReminderConfigSchema).optional(),
   targetValue: z.number().positive('targetValue must be > 0').optional().nullable(),
+  stepAmount: z.number().positive().optional().nullable(),
+  milestoneMode: MilestoneModeSchema.optional(),
+  lifecycleStatus: TaskLifecycleStatusSchema.optional(),
+  targetDate: DateStringSchema.optional().nullable(),
   unit: z.string().trim().max(24).optional().nullable(),
   sortOrder: z.number().int().optional(),
 });
