@@ -42,7 +42,7 @@ export function getOperationalDate(
   dateInput: Date | string = new Date(),
   options: DayRolloverOptions = {}
 ): OperationalDateInfo {
-  const { dayCutoffHour = 3, timezone = 'UTC' } = options;
+  const { dayCutoffHour = 0, timezone = 'UTC' } = options;
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
 
   // Format parts according to target timezone
@@ -103,8 +103,9 @@ export function isScheduleActiveOnDate(params: {
   recurrence?: TaskRecurrence;
   cycleDays?: number | null;
   operationalInfo: OperationalDateInfo;
+  createdAt?: string;
 }): boolean {
-  const { schedule, recurrence = 'daily', cycleDays, operationalInfo } = params;
+  const { schedule, recurrence = 'daily', cycleDays, operationalInfo, createdAt } = params;
   const { dateString, dayOfWeek, calendarDay, calendarMonth, calendarYear } = operationalInfo;
 
   // 1. If explicit WorkSchedule is defined, evaluate cadence
@@ -153,7 +154,21 @@ export function isScheduleActiveOnDate(params: {
         // Clamp to last day of month if target day exceeds month length (e.g. 31st in Feb or Apr)
         const daysInMonth = new Date(Date.UTC(calendarYear, calendarMonth, 0)).getUTCDate();
         const effectiveTargetDay = Math.min(cadence.dayOfMonth, daysInMonth);
-        return calendarDay === effectiveTargetDay;
+        if (calendarDay === effectiveTargetDay) return true;
+
+        // Mid-cycle creation grace period:
+        if (createdAt) {
+          const createdOp = getOperationalDate(createdAt, { timezone: schedule.timezone || 'UTC' });
+          if (
+            createdOp.calendarYear === calendarYear &&
+            createdOp.calendarMonth === calendarMonth &&
+            createdOp.calendarDay > effectiveTargetDay &&
+            calendarDay >= createdOp.calendarDay
+          ) {
+            return true;
+          }
+        }
+        return false;
       }
 
       case 'quarterly': {
@@ -168,7 +183,22 @@ export function isScheduleActiveOnDate(params: {
         // Active on the specified month and day of year
         const daysInMonth = new Date(Date.UTC(calendarYear, cadence.month, 0)).getUTCDate();
         const effectiveTargetDay = Math.min(cadence.dayOfMonth, daysInMonth);
-        return calendarMonth === cadence.month && calendarDay === effectiveTargetDay;
+        if (calendarMonth === cadence.month && calendarDay === effectiveTargetDay) {
+          return true;
+        }
+
+        // Mid-cycle creation grace period:
+        if (createdAt) {
+          const createdOp = getOperationalDate(createdAt, { timezone: schedule.timezone || 'UTC' });
+          const isAfterTargetThisYear =
+            createdOp.calendarYear === calendarYear &&
+            (createdOp.calendarMonth > cadence.month ||
+              (createdOp.calendarMonth === cadence.month && createdOp.calendarDay > effectiveTargetDay));
+          if (isAfterTargetThisYear && dateString >= createdOp.dateString) {
+            return true;
+          }
+        }
+        return false;
       }
 
       default:
@@ -187,15 +217,36 @@ export function isScheduleActiveOnDate(params: {
       // Standard weekly defaults to Mondays
       return dayOfWeek === 'mon';
 
-    case 'monthly':
+    case 'monthly': {
       // Standard monthly defaults to the 1st of the month
-      return calendarDay === 1;
+      if (calendarDay === 1) return true;
+      if (createdAt) {
+        const createdOp = getOperationalDate(createdAt, { timezone: 'UTC' });
+        if (
+          createdOp.calendarYear === calendarYear &&
+          createdOp.calendarMonth === calendarMonth &&
+          createdOp.calendarDay > 1 &&
+          calendarDay >= createdOp.calendarDay
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     case 'quarterly':
       return [1, 4, 7, 10].includes(calendarMonth) && calendarDay === 1;
 
-    case 'yearly':
-      return calendarMonth === 1 && calendarDay === 1;
+    case 'yearly': {
+      if (calendarMonth === 1 && calendarDay === 1) return true;
+      if (createdAt) {
+        const createdOp = getOperationalDate(createdAt, { timezone: 'UTC' });
+        if (createdOp.calendarYear === calendarYear && (createdOp.calendarMonth > 1 || createdOp.calendarDay > 1)) {
+          if (dateString >= createdOp.dateString) return true;
+        }
+      }
+      return false;
+    }
 
     case 'custom': {
       if (!cycleDays || cycleDays <= 1) return true;

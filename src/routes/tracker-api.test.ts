@@ -372,6 +372,47 @@ describe('Laya Tracker Fastify API Endpoints', () => {
     expect(historyRes.json().events).toHaveLength(1);
   });
 
+  it('accepts exceedable progress percentage up to 1000% for flexible baseline logging', async () => {
+    const { app } = await createTestApp();
+    const taskRes = await app.inject({
+      method: 'POST',
+      url: '/api/v1/tasks',
+      headers: authHeaderA,
+      payload: {
+        title: 'Deep Work Session',
+        taskType: 'percentage',
+        recurrence: 'daily',
+      },
+    });
+    const taskId = taskRes.json().task.id;
+
+    // 150% progress (e.g. bonus flexible baseline effort) should be accepted
+    const eventRes1 = await app.inject({
+      method: 'POST',
+      url: `/api/v1/tasks/${taskId}/events`,
+      headers: authHeaderA,
+      payload: {
+        id: randomUUID(),
+        status: 'in_progress',
+        progressPercentage: 150.0,
+      },
+    });
+    expect(eventRes1.statusCode).toBe(201);
+
+    // Out of bounds (> 1000%) should be rejected
+    const eventRes2 = await app.inject({
+      method: 'POST',
+      url: `/api/v1/tasks/${taskId}/events`,
+      headers: authHeaderA,
+      payload: {
+        id: randomUUID(),
+        status: 'in_progress',
+        progressPercentage: 1001.0,
+      },
+    });
+    expect(eventRes2.statusCode).toBe(400);
+  });
+
   // 7. Guilt-Free Consistency Summary
   it('computes guilt-free consistency rating excluding Ignored tasks from denominator', async () => {
     const { app } = await createTestApp();

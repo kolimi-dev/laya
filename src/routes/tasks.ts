@@ -34,7 +34,7 @@ const ActiveChecklistQuerySchema = z.object({
   groupId: z.union([GroupIdSchema, z.literal('unassigned')]).optional().nullable(),
   status: TaskProgressStatusSchema.optional().nullable(),
   asOf: z.string().optional(),
-  dayCutoffHour: z.coerce.number().int().min(0).max(12).default(3),
+  dayCutoffHour: z.coerce.number().int().min(0).max(12).default(0),
 });
 
 const RecordEventBodySchema = z
@@ -45,7 +45,7 @@ const RecordEventBodySchema = z
     progressPercentage: z
       .number()
       .min(0.0, 'Progress percentage cannot be less than 0.00')
-      .max(100.0, 'Progress percentage cannot exceed 100.00')
+      .max(1000.0, 'Progress percentage cannot exceed 1000.00')
       .optional()
       .nullable(),
     notes: z.string().trim().max(280, 'Notes cannot exceed 280 characters').optional().nullable(),

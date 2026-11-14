@@ -65,7 +65,7 @@ export function calculateConsistencyScore(
       totalIgnoredPoints += item.scheduledPoints;
       ignoredCount++;
     } else {
-      totalCompletedPoints += item.earnedPoints;
+      totalCompletedPoints += Math.min(item.scheduledPoints, item.earnedPoints);
       if (item.status === 'done') {
         doneCount++;
       } else if (item.status === 'in_progress') {

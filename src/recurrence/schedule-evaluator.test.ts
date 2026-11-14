@@ -196,6 +196,32 @@ describe('Schedule Evaluator & Night Owl Offset', () => {
       })).toBe(true);
     });
 
+    it('applies mid-cycle creation grace period for monthly habits created after target day', () => {
+      const schedule: WorkSchedule = {
+        cadence: { type: 'monthly', dayOfMonth: 5 },
+      };
+
+      // Created Nov 12, evaluated on Nov 12 -> active
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-11-12', dayOfWeek: 'thu', calendarYear: 2026, calendarMonth: 11, calendarDay: 12 },
+        createdAt: '2026-11-12T10:00:00.000Z',
+      })).toBe(true);
+
+      // In December -> strictly active on 5th only
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-12-12', dayOfWeek: 'sat', calendarYear: 2026, calendarMonth: 12, calendarDay: 12 },
+        createdAt: '2026-11-12T10:00:00.000Z',
+      })).toBe(false);
+
+      expect(isScheduleActiveOnDate({
+        schedule,
+        operationalInfo: { dateString: '2026-12-05', dayOfWeek: 'sat', calendarYear: 2026, calendarMonth: 12, calendarDay: 5 },
+        createdAt: '2026-11-12T10:00:00.000Z',
+      })).toBe(true);
+    });
+
     it('evaluates quarterly cadence (active in Jan, Apr, Jul, Oct on target day)', () => {
       const schedule: WorkSchedule = {
         cadence: { type: 'quarterly', dayOfMonth: 1 },

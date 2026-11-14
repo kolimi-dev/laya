@@ -81,6 +81,7 @@ export function computeActiveChecklist(
       recurrence: task.recurrence,
       cycleDays: task.cycleDays,
       operationalInfo,
+      createdAt: task.createdAt,
     });
 
     if (!isDue) {
