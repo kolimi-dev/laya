@@ -15,6 +15,7 @@ import { createAuthPreHandler } from './auth/auth-middleware.js';
 import { registerErrorHandler } from './plugins/error-handler.js';
 import { healthRoutes } from './routes/health.js';
 import { authEmailRoutes } from './routes/auth-email.js';
+import { appVersionRoutes } from './routes/app-version.js';
 import { groupRoutes } from './routes/groups.js';
 import { taskRoutes } from './routes/tasks.js';
 import { consistencyRoutes } from './routes/consistency.js';
@@ -82,6 +83,7 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
   // 5. Public Routes
   await app.register(healthRoutes);
   await app.register(authEmailRoutes);
+  await app.register(appVersionRoutes);
 
   // 5. Authenticated Domain Routes
   await app.register(async (protectedApp) => {
