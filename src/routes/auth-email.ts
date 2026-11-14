@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import * as jose from 'jose';
 import { Resend } from 'resend';
 import { getEnv } from '../config/env.js';
+import { getSql } from '../storage/db.js';
 
 const sendOtpSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -226,6 +227,27 @@ export async function authEmailRoutes(fastify: FastifyInstance): Promise<void> {
     // Generate deterministic user ID
     const emailHash = crypto.createHash('sha256').update(normalizedEmail).digest('hex').substring(0, 16);
     const userId = `usr_${emailHash}`;
+
+    // Sync Master Identity to auth.users (ADR-0004 & Multi-App Observability)
+    const sql = getSql();
+    if (sql) {
+      try {
+        await sql`
+          INSERT INTO auth.users (id, email, email_verified_at, last_login_at, created_by)
+          VALUES (${userId}, ${normalizedEmail}, NOW(), NOW(), ${userId})
+          ON CONFLICT (id) DO UPDATE SET 
+            last_login_at = NOW(),
+            email_verified_at = COALESCE(auth.users.email_verified_at, NOW())
+        `;
+        await sql`
+          INSERT INTO auth.user_identities (id, user_id, identity_provider, provider_uid, last_sign_in_at, created_by)
+          VALUES (${'idn_' + emailHash}, ${userId}, 'email', ${normalizedEmail}, NOW(), ${userId})
+          ON CONFLICT (id) DO UPDATE SET last_sign_in_at = NOW()
+        `;
+      } catch (err) {
+        request.log.warn(err, 'Observability note: could not sync user to auth.users schema');
+      }
+    }
 
     // Sign 30-day JWT Access Token
     const secret = new TextEncoder().encode(env.JWT_SECRET);
