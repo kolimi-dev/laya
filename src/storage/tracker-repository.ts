@@ -61,7 +61,7 @@ export interface TrackerRepository {
   updateTask(
     id: string,
     userId: UserId,
-    updates: Partial<Pick<Task, 'title' | 'targetValue' | 'unit' | 'sortOrder' | 'schedule' | 'recurrence' | 'cycleDays'>>
+    updates: Partial<Pick<Task, 'title' | 'targetValue' | 'unit' | 'sortOrder' | 'schedule' | 'recurrence' | 'cycleDays' | 'stepAmount' | 'milestoneMode' | 'lifecycleStatus' | 'targetDate'>>
   ): Promise<Task>;
   archiveTask(id: string, userId: UserId): Promise<Task>;
   softDeleteTask(id: string, userId: UserId): Promise<void>;

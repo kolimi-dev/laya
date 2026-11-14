@@ -5,11 +5,10 @@
 
 import postgres from 'postgres';
 import { UserId } from '../domain/types.js';
-import { UserDataExport, UserDataImportResult } from './tracker-repository.js';
-import { PostgresTrackerRepository } from './postgres-tracker-repository.js';
+import { UserDataExport, UserDataImportResult, TrackerRepository } from './tracker-repository.js';
 
 export async function exportUserDataSql(
-  repo: PostgresTrackerRepository,
+  repo: TrackerRepository,
   userId: UserId
 ): Promise<UserDataExport> {
   const [groups, tasksWithMilestones, events] = await Promise.all([

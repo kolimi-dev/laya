@@ -160,6 +160,62 @@ export function evaluateTaskProgress(params: EvaluateTaskParams): TaskEvaluation
       };
     }
 
+    case 'one_time': {
+      const isDone = taskEvents.some((e) => e.status === 'done');
+      return {
+        taskId: task.id,
+        taskType: 'one_time',
+        status: isDone ? 'done' : 'pending',
+        scheduledPoints: 1.0,
+        earnedPoints: isDone ? 1.0 : 0.0,
+        progressPercentage: isDone ? 100.0 : 0.0,
+        isIgnored: false,
+        completedMilestoneIds: [],
+        notes: notes.length > 0 ? notes : undefined,
+      };
+    }
+
+    case 'quantified': {
+      let latestQuantified = 0;
+      let hasEvent = false;
+      for (let i = taskEvents.length - 1; i >= 0; i--) {
+        const ev = taskEvents[i];
+        if (ev.status === 'done') {
+          latestQuantified = task.targetValue ?? 100;
+          hasEvent = true;
+          break;
+        }
+        if (ev.quantifiedValue !== undefined && ev.quantifiedValue !== null) {
+          latestQuantified = ev.quantifiedValue;
+          hasEvent = true;
+          break;
+        }
+      }
+
+      const target = task.targetValue && task.targetValue > 0 ? task.targetValue : 100;
+      const ratio = Math.min(1.0, Math.max(0.0, latestQuantified / target));
+      const progressPercentage = Math.round(ratio * 10000) / 100;
+
+      let status: 'pending' | 'in_progress' | 'done' = 'pending';
+      if (latestQuantified >= target) {
+        status = 'done';
+      } else if (hasEvent && latestQuantified > 0) {
+        status = 'in_progress';
+      }
+
+      return {
+        taskId: task.id,
+        taskType: 'quantified',
+        status,
+        scheduledPoints: 1.0,
+        earnedPoints: Math.round(ratio * 10000) / 10000,
+        progressPercentage,
+        isIgnored: false,
+        completedMilestoneIds: [],
+        notes: notes.length > 0 ? notes : undefined,
+      };
+    }
+
     default: {
       const exhaustiveCheck: never = task.taskType;
       throw new Error(`Unhandled task type: ${exhaustiveCheck}`);

@@ -151,7 +151,7 @@ export class PostgresTrackerRepository implements TrackerRepository {
   async updateTask(
     id: string,
     userId: UserId,
-    updates: Partial<Pick<Task, 'title' | 'targetValue' | 'unit' | 'sortOrder' | 'schedule' | 'recurrence' | 'cycleDays'>>
+    updates: Partial<Pick<Task, 'title' | 'targetValue' | 'unit' | 'sortOrder' | 'schedule' | 'recurrence' | 'cycleDays' | 'stepAmount' | 'milestoneMode' | 'lifecycleStatus' | 'targetDate'>>
   ): Promise<Task> {
     const existing = await this.getTaskById(id, userId);
     if (!existing) throw new TaskNotFoundError(id);
