@@ -13,7 +13,7 @@ export interface AppVersionManifest {
 
 export const APP_VERSION_MANIFEST: AppVersionManifest = {
   latestVersion: '1.2.0',
-  apkUrl: 'https://expo.dev/artifacts/eas/gRbzkk-L6AT8lPrboZ9k4JzajuWH4sNr273oU6A0nhI.apk',
+  apkUrl: 'https://expo.dev/artifacts/eas/ATi2z7zZMCRsvyUQePf_3n4rp9KIueeXkEUOcK1YSgs.apk',
   releaseNotes: [
     'Honest Reality 60/40 visual scaling for Volume Bars: 100% target baseline with bonus surge (>100%)',
     'Retroactive check-in calculation fix for Continuity Ring with time-horizon context badges',
