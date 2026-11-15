@@ -12,15 +12,15 @@ export interface AppVersionManifest {
 }
 
 export const APP_VERSION_MANIFEST: AppVersionManifest = {
-  latestVersion: '1.1.0',
+  latestVersion: '1.2.0',
   apkUrl: 'https://expo.dev/artifacts/eas/gRbzkk-L6AT8lPrboZ9k4JzajuWH4sNr273oU6A0nhI.apk',
   releaseNotes: [
-    'All Habits Catalog: Complete inventory across daily, monthly, and custom rhythms',
-    'Full Group Management: Create, edit, and delete groups with explicit confirmation and task remapping',
-    'Universal CRUD: Edit dashboard names, delete dashboards, and clean peaceful chart View Mode',
-    'Task-to-Dashboard navigation pills directly on habit cards',
-    'Deterministic monotonic retroactive logging for past dates',
-    'Upcoming Horizon navigation hygiene and quick-return paths',
+    'Honest Reality 60/40 visual scaling for Volume Bars: 100% target baseline with bonus surge (>100%)',
+    'Retroactive check-in calculation fix for Continuity Ring with time-horizon context badges',
+    'Instant Chart Discovery: Category-first Add Chart flow with live search and smart visualizer auto-pairing',
+    'Deep-Press Drag & 60fps Routine Reordering: Arrange daily habits directly on Today’s Rhythm',
+    'Life Dimension Studio: Dynamic group management with live card preview, 8-palette color picker, and reordering',
+    '1-tap chart pinning from Master Catalog with WCAG touch target compliance',
   ],
 };
 

@@ -14,7 +14,7 @@ describe('App Version Manifest Endpoint', () => {
 
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body);
-    expect(body.latestVersion).toBe('1.1.0');
+    expect(body.latestVersion).toBe('1.2.0');
     expect(body.apkUrl).toContain('.apk');
     expect(Array.isArray(body.releaseNotes)).toBe(true);
     expect(body.releaseNotes.length).toBeGreaterThan(0);
