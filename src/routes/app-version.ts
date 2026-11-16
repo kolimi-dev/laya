@@ -24,9 +24,33 @@ export const APP_VERSION_MANIFEST: AppVersionManifest = {
   ],
 };
 
+let cachedManifest: AppVersionManifest = APP_VERSION_MANIFEST;
+let lastFetchMs = 0;
+const CACHE_TTL_MS = 60000;
+
+export async function getLiveAppManifest(): Promise<AppVersionManifest> {
+  const now = Date.now();
+  if (now - lastFetchMs < CACHE_TTL_MS) {
+    return cachedManifest;
+  }
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/kolimi-dev/laya-mobile/publish/version.json');
+    if (res.ok) {
+      const data = (await res.json()) as AppVersionManifest;
+      if (data && data.latestVersion && data.apkUrl) {
+        cachedManifest = data;
+        lastFetchMs = now;
+      }
+    }
+  } catch {
+    // Graceful offline fallback to last cached / default
+  }
+  return cachedManifest;
+}
+
 export async function appVersionRoutes(app: FastifyInstance): Promise<void> {
   app.get('/api/v1/app/version', async () => {
-    return APP_VERSION_MANIFEST;
+    return getLiveAppManifest();
   });
 }
 
