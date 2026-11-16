@@ -19,4 +19,17 @@ describe('App Version Manifest Endpoint', () => {
     expect(Array.isArray(body.releaseNotes)).toBe(true);
     expect(body.releaseNotes.length).toBeGreaterThan(0);
   });
+
+  it('GET /download redirects 302 to the latest APK artifact', async () => {
+    const app = Fastify();
+    await app.register(appVersionRoutes);
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/download',
+    });
+
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe(APP_VERSION_MANIFEST.apkUrl);
+  });
 });

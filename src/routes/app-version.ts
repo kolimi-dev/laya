@@ -52,5 +52,15 @@ export async function appVersionRoutes(app: FastifyInstance): Promise<void> {
   app.get('/api/v1/app/version', async () => {
     return getLiveAppManifest();
   });
+
+  app.get('/download', async (_req, reply) => {
+    const manifest = await getLiveAppManifest();
+    return reply.redirect(manifest.apkUrl, 302);
+  });
+
+  app.get('/api/v1/app/download', async (_req, reply) => {
+    const manifest = await getLiveAppManifest();
+    return reply.redirect(manifest.apkUrl, 302);
+  });
 }
 
