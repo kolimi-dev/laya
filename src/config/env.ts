@@ -24,6 +24,10 @@ export const envSchema = z.object({
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default('Kolimi ID <auth@kolimi.dev>'),
 
+  // Feedback Notifications
+  FEEDBACK_TARGET_EMAIL: z.string().email().default('hemanth@kolimi.dev'),
+  FEEDBACK_FROM_EMAIL: z.string().default('Laya Feedback <feedback@kolimi.dev>'),
+
   // Optional PostgreSQL database URL (defaults to in-memory store in dev/test)
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid PostgreSQL connection URL').optional(),
 });

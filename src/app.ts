@@ -84,8 +84,9 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
   await app.register(healthRoutes);
   await app.register(authEmailRoutes);
   await app.register(appVersionRoutes);
+  await app.register(feedbackRoutes);
 
-  // 5. Authenticated Domain Routes
+  // 6. Authenticated Domain Routes
   await app.register(async (protectedApp) => {
     protectedApp.addHook('preHandler', createAuthPreHandler(verifier));
 
@@ -93,7 +94,6 @@ export async function buildApp(options: AppOptions = {}): Promise<FastifyInstanc
     await protectedApp.register(taskRoutes, { repository });
     await protectedApp.register(consistencyRoutes, { repository });
     await protectedApp.register(dataRoutes, { repository });
-    await protectedApp.register(feedbackRoutes);
     await protectedApp.register(telemetryRoutes);
   });
 
