@@ -12,15 +12,15 @@ export interface AppVersionManifest {
 }
 
 export const APP_VERSION_MANIFEST: AppVersionManifest = {
-  latestVersion: '1.2.0',
+  latestVersion: '1.2.1',
   apkUrl: 'https://expo.dev/artifacts/eas/ATi2z7zZMCRsvyUQePf_3n4rp9KIueeXkEUOcK1YSgs.apk',
   releaseNotes: [
-    'Honest Reality 60/40 visual scaling for Volume Bars: 100% target baseline with bonus surge (>100%)',
-    'Retroactive check-in calculation fix for Continuity Ring with time-horizon context badges',
-    'Instant Chart Discovery: Category-first Add Chart flow with live search and smart visualizer auto-pairing',
-    'Deep-Press Drag & 60fps Routine Reordering: Arrange daily habits directly on Today’s Rhythm',
-    'Life Dimension Studio: Dynamic group management with live card preview, 8-palette color picker, and reordering',
-    '1-tap chart pinning from Master Catalog with WCAG touch target compliance',
+    'Restored classic Laya brand identity and app icon',
+    'Human-friendly flexible baseline descriptions (Alternative Ways to Complete)',
+    'Past date quantified editing fix with monotonic retroactive timestamp ordering',
+    'Today’s remaining task counts in group selector dropdown',
+    'Context-aware task creation alerts with 1-tap navigation to Today’s Rhythm',
+    'Deep-Press Drag & 60fps Routine Reordering directly on Today’s Rhythm',
   ],
 };
 
