@@ -12,8 +12,8 @@ export interface AppVersionManifest {
 }
 
 export const APP_VERSION_MANIFEST: AppVersionManifest = {
-  latestVersion: '1.2.1',
-  apkUrl: 'https://expo.dev/artifacts/eas/ra4OzaLXosz5S_VBE3VvSCI6dfGQVntiERL9FQQDfmI.apk',
+  latestVersion: '1.2.2',
+  apkUrl: 'https://expo.dev/artifacts/eas/_uhJjC0jN7nXO7jbVHyrcR8Lf2s9QJcjV1k-yZoX7L4.apk',
   releaseNotes: [
     'Restored classic Laya brand identity and app icon',
     'Human-friendly flexible baseline descriptions (Alternative Ways to Complete)',

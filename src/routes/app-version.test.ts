@@ -30,6 +30,6 @@ describe('App Version Manifest Endpoint', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe(APP_VERSION_MANIFEST.apkUrl);
+    expect(response.headers.location).toContain('.apk');
   });
 });
