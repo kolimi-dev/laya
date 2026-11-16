@@ -12,15 +12,15 @@ export interface AppVersionManifest {
 }
 
 export const APP_VERSION_MANIFEST: AppVersionManifest = {
-  latestVersion: '1.2.2',
-  apkUrl: 'https://expo.dev/artifacts/eas/_uhJjC0jN7nXO7jbVHyrcR8Lf2s9QJcjV1k-yZoX7L4.apk',
+  latestVersion: '1.2.3',
+  apkUrl: 'https://expo.dev/artifacts/eas/BMTsnXw8bDxRuygY_qhx5Z15Et9RpG_8PnQ_s5F_5pA.apk',
   releaseNotes: [
-    'Restored classic Laya brand identity and app icon',
-    'Human-friendly flexible baseline descriptions (Alternative Ways to Complete)',
-    'Past date quantified editing fix with monotonic retroactive timestamp ordering',
-    'Today’s remaining task counts in group selector dropdown',
-    'Context-aware task creation alerts with 1-tap navigation to Today’s Rhythm',
-    'Deep-Press Drag & 60fps Routine Reordering directly on Today’s Rhythm',
+    'Direct in-app feedback channel with silent delivery to development team',
+    'Task creation defaults to Once (Single occurrence) instead of Daily',
+    'Rebranded anytime cadence to Whenever with clear intent',
+    'Habit rollover engine: uncompleted habits roll forward while keeping recurrence anchors fixed',
+    'Simplified walkthrough with real-world habit examples',
+    'Temporary sponsor button disabled',
   ],
 };
 
