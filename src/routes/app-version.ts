@@ -12,15 +12,14 @@ export interface AppVersionManifest {
 }
 
 export const APP_VERSION_MANIFEST: AppVersionManifest = {
-  latestVersion: '1.2.3',
-  apkUrl: 'https://expo.dev/artifacts/eas/BMTsnXw8bDxRuygY_qhx5Z15Et9RpG_8PnQ_s5F_5pA.apk',
+  latestVersion: '1.2.4',
+  apkUrl: 'https://expo.dev/artifacts/eas/BNOI6gCpHG3z9povg2-RwxHwKdd43RY_BYNRUUfMitE.apk',
   releaseNotes: [
-    'Direct in-app feedback channel with silent delivery to development team',
-    'Task creation defaults to Once (Single occurrence) instead of Daily',
-    'Rebranded anytime cadence to Whenever with clear intent',
-    'Habit rollover engine: uncompleted habits roll forward while keeping recurrence anchors fixed',
-    'Simplified walkthrough with real-world habit examples',
-    'Temporary sponsor button disabled',
+    'Dashboard chart deduplication: prevents duplicate charts for the same habit',
+    'Mandatory habit name validation with accent asterisk and disabled submit guard',
+    'Custom sleeping time profile setting (default: 8:00 PM / 20:00) with quick presets',
+    'Evening Rhythm Review: daily offline notification to review habits and wind down without streak guilt',
+    'Hardened task reminder notifications with dedicated Android channels',
   ],
 };
 
